@@ -1,0 +1,53 @@
+:yonemoto simPR.c
+NEURON {
+    POINT_PROCESS RPRInput
+    :SUFFIX RPRInput
+    RANGE onset, amp, i, v       
+    ELECTRODE_CURRENT i    
+}
+
+UNITS {
+	(pA) = (picoamp)
+    (nA) = (nanoamp)
+    (mV) = (millivolt)
+    (uF) = (microfarad)
+}
+
+PARAMETER {
+    :i (nA)
+    onset (ms)              
+    amp (pA)
+    area = 200 (um2)
+    cm = 10 (uF)                  
+}
+
+ASSIGNED {                         
+    i (nA)
+    :onset (ms)                        
+    :t (ms)
+    ampnA (nA)                       
+}
+
+INITIAL {
+    i = 0             : Initial
+    ampnA = amp * 0.001
+}
+
+BREAKPOINT {
+    i = calcInputRPR(onset, ampnA)
+    :VERBATIM
+    :printf("t: %g, onset: %g, amplitude: %g", t, t - onset, amp);
+    :ENDVERBATIM
+}
+
+FUNCTION calcInputRPR( on, amplitude)(nA){
+    LOCAL light, photo
+    light = t - on
+    photo = (32.0*(1-exp(-light/50)) -33.0/(1+exp(-(light-3800)/450)) +(1-exp(-light/800)))/33.0
+    if (light < 0) {
+        :light = t - on
+        calcInputRPR = -0.04
+    } else {
+        calcInputRPR = -0.04  + amplitude * photo
+    }
+}

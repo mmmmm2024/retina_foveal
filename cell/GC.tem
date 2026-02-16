@@ -1,0 +1,79 @@
+begintemplate GC
+
+//public soma, spiketimes, spikecount, vc, 
+public soma, vc, ic
+create soma
+//objref spikecount, spiketimes, vc
+objref vc, ic
+
+proc init() {
+    create soma
+	//spiketimes = new Vector()
+    soma {
+		//figure
+
+		L = 100
+		diam = 25
+		insert pas
+		e_pas = -65 //default:-65
+		g_pas = 0.00005//default:0.00005
+		Ra = 110
+		//cm = 1
+
+		//channel
+
+       	insert spike2
+	 	gnabar_spike2 = 0.08
+	 	//gnabar_spike2 = 0.07
+		gkbar_spike2 = 0.05
+		gcabar_spike2 = 0.0012
+		//gcabar_spike2 = 0.0008
+		gkcbar_spike2 = 0.001
+		ena = 60
+		ek = -100
+       	 		
+       	 
+		//L = 15
+		//e_pas = -60
+		//insert spike
+		//gnabar_spike = 0.04
+		//gkbar_spike = 0.012
+		//gabar_spike = 0.036
+		//gcabar_spike = 0.002
+		//gkcbar_spike = 0.0005
+		//gkmbar_spike = 0.000
+		//vshift_na_k_spike=0
+		//ca50_spike = 0.001
+		//ena = 65
+		//ek = -100
+
+
+		//celsius = 22
+		//ena = 35
+		//ek = -75
+       	 
+		insert cadbip
+		cainf_cadbip = 0.0001
+		depth_cadbip = 3 // (micron)
+		taur_cadbip = 10 // (ms)
+
+		insert CaT
+
+		//spikecount = new APCount(0.5)
+		//spikecount.thresh = -30
+		//spikecount.record(spiketimes)
+
+		//Voltage clamp
+
+		////vc = new VClamp(0.5)
+		//vc.dur[0]=10
+		//vc.amp[0]=-65
+		////ic = new IClamp(0.5)
+
+		//HCN channel
+		insert HCN
+		//gmax_HCN = 0.0001
+    }
+}// end init()
+
+endtemplate GC

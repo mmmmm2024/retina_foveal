@@ -1,0 +1,869 @@
+//DEFINE THE NETCONNECTION
+
+//objref [post][pre]
+//Glutamate syn(Ex)
+
+objref R2RB[Num_RBC][Num_R]
+objref C2ONCB[Num_ONCBC][NC_SAFE]	
+objref C2OFFCB[Num_OFFCBC][NC_SAFE]		
+objref RBC2AC[Num_AC][Num_RBC]				//RBC -> AIIAC
+objref ONCB2ONGC[Num_ONGC][Num_ONCBC] 		//ONCB -> ONGC
+objref OFFCB2OFFGC[Num_OFFGC][Num_OFFCBC]	//OFFCB -> OFFGC
+objref OFFCB2AC[Num_AC][Num_OFFCBC]			//OFFCB[47] -> AIIAC
+
+//Glycinergic syn(Inh)
+objref AC2OFFGC[Num_OFFGC][Num_AC]		//AIIAC -> OFFGC
+objref AC2OFFCB[Num_OFFCBC][Num_AC] 	//AIIAC -> OFFCB
+
+// //Gap junction
+objref Gap_Cone[Num_C][Num_C]
+objref Gap_R_C[Num_C][10] 
+objref Gap_AC[Num_AC][Num_AC]			//AIIAC <-> AIIAC
+objref Gap_OFFGC[Num_OFFGC][Num_OFFGC]	//OFFGC <-> OFFGC
+
+objref Gap_ONBC_AC[Num_ONCBC][Num_AC]	//ONCB <-> AIIAC
+objref Gap_AC_ONBC[Num_AC][Num_ONCBC]	//ONCB <-> AIIAC
+
+// //random seed
+objref prob
+prob = new Random(1)
+
+objref prob2
+prob2 = new Random(32)
+
+objref prob3
+prob3 = new Random(45)
+
+//============================//
+//    Glutamate synapses(Ex)  //
+//----------------------------//
+//	  Rod -> AIIAC   		  //
+//    ONCB -> ONGC            //
+//    OFFCB -> OFFGC          //
+//    OFFCB -> AIIAC          //
+//============================//
+
+proc Ribbon_syn () {//local hv, offhv
+		
+	// print "EX : Rods -> RBC"
+	// for i = 0, Num_R - 1 {
+	// 	for k = 0, R_cov - 1 {
+	// 		j = rand_r2rbc.repick()  // 0〜Num_RBC-1 のランダム整数
+
+	// 		R2RB[i][k] = new ribbon_syn_R2RB()
+	// 		R_BC[j].soma R2RB[i][k].loc(1)  // Post synaptic: RBC soma
+	// 		setpointer R2RB[i][k].v_pre, Rods[i].soma.v(1)
+
+	// 		R2RB[i][k].act   = act_R2RB
+	// 		R2RB[i][k].p1    = p1_R2RB
+	// 		R2RB[i][k].p2    = p2_R2RB
+	// 		R2RB[i][k].w     = w_R2RB
+	// 		R2RB[i][k].v_th  = v_th_R2RB 
+	// 		R2RB[i][k].v_slp = v_slp_R2RB
+	// 		R2RB[i][k].alpha = alpha_R2RB
+	// 		R2RB[i][k].beta  = beta_R2RB
+	// 		R2RB[i][k].g_max = g_R2RB
+	// 	}
+	// }
+
+    // print "EX : Rods -> RBC"
+    // for i = 0, Num_RBC - 1 {
+    //     for j = 0, Num_R - 1 {
+    //         for n = 0, 3 { // 3本
+    //             k = j*4 + n
+
+    //             R2RB[i][k] = new ribbon_syn_R2RB()
+    //             R_BC[i].soma R2RB[i][k].loc(1)     // Post: RBC i
+    //             setpointer R2RB[i][k].v_pre, Rods[j].soma.v(1)  // Pre: Rod j
+
+    //             R2RB[i][k].e   = -58 
+    //             R2RB[i][k].act   = act_R2RB
+    //             R2RB[i][k].p1    = p1_R2RB
+    //             R2RB[i][k].p2    = p2_R2RB
+    //             R2RB[i][k].w     = w_R2RB
+    //             R2RB[i][k].v_th  = v_th_R2RB 
+    //             R2RB[i][k].v_slp = v_slp_R2RB
+    //             R2RB[i][k].alpha = alpha_R2RB
+    //             R2RB[i][k].beta  = beta_R2RB
+    //             R2RB[i][k].g_max = g_R2RB
+    //         }
+    //     }
+    // }
+
+    print "EX : Rods -> RBC"
+    for i = 0, Num_RBC - 1 {
+        for j = 0, Num_R - 1 {
+            
+            R2RB[i][j] = new ribbon_syn_R2RB()
+            R_BC[i].soma R2RB[i][j].loc(1)     // Post: RBC i
+            setpointer R2RB[i][j].v_pre, Rods[j].soma.v(1)  // Pre: Rod j
+
+            R2RB[i][j].e   = -55 
+            R2RB[i][j].act   = act_R2RB
+            R2RB[i][j].p1    = p1_R2RB
+            R2RB[i][j].p2    = p2_R2RB
+            //R2RB[i][j].w     = w_R2RB
+			//R2RB[i][j].u     = 0.02
+            R2RB[i][j].v_th  = v_th_R2RB 
+            R2RB[i][j].v_slp = v_slp_R2RB
+            //R2RB[i][j].alpha = alpha_R2RB
+            //R2RB[i][j].beta  = beta_R2RB
+            R2RB[i][j].g_max = g_R2RB
+            
+        }
+    }
+
+	//Cones -> ONCB mGluR6
+	print "EX : Cones -> ONCBC"
+	for i = 0, Num_ONCBC-1{
+		C2ONCB[i][i] = new ribbon_syn_R2RB()
+		ON_CBC[i].soma C2ONCB[i][i].loc(1)   // Post synaptic compartment
+		setpointer C2ONCB[i][i].v_pre, Cones[i].soma.v(1)
+
+		C2ONCB[i][i].act = act_C2ONCB
+		C2ONCB[i][i].p1 = p1_C2ONCB  
+		C2ONCB[i][i].p2 = p2_C2ONCB 
+		//C2ONCB[i][i].e = -65
+		//C2ONCB[i][i].w = w_C2ONCB
+		C2ONCB[i][i].v_th = v_th_C2ONCB
+		C2ONCB[i][i].v_slp = v_slp_C2ONCB
+		//C2ONCB[i][i].alpha = alpha_C2ONCB //(original)1.0
+		//C2ONCB[i][i].beta = beta_C2ONCB //(original)1.1
+
+		C2ONCB[i][i].g_max = g_C2ONCB
+	}//Cones -> ONCB mGluR6
+
+
+	print "Ex : Cones -> OFFCBC"
+	for i = 0, Num_OFFCBC-1{
+		C2OFFCB[i][i] = new depsyn()
+		OFF_CBC[i].soma C2OFFCB[i][i].loc(1)   // Post synaptic compartment
+		setpointer C2OFFCB[i][i].v_pre, Cones[i].soma.v(1)
+
+		C2OFFCB[i][i].act = act_C2ONCB
+		C2OFFCB[i][i].p1 = p1_C2ONCB  
+		C2OFFCB[i][i].p2 = p2_C2ONCB 
+		//C2OFFCB[i][i].e = -65
+		//C2ONCB[i][i].w = w_C2ONCB
+		C2OFFCB[i][i].v_th = v_th_C2OFFCB
+		C2OFFCB[i][i].v_slp = v_slp_C2OFFCB
+		//C2ONCB[i][i].alpha = alpha_C2ONCB //(original)1.0
+		//C2ONCB[i][i].beta = beta_C2ONCB //(original)1.1
+
+		C2OFFCB[i][i].g_max = g_C2OFFCB
+	}
+
+	// RB -> AIIAC
+	print "EX : RBC -> AIIAC"
+	for i = 0, Num_AC-1{
+		for j = 0, Num_RBC-1{
+			RBC2AC[i][j] = new ribbon_syn()
+			AIIAC[i].soma RBC2AC[i][j].loc(1)   // Post synaptic compartment
+			setpointer RBC2AC[i][j].v_pre, RBC[j].soma.v(1)
+
+            //RBC2AC[i][j].e = -55
+			RBC2AC[i][j].act = 0.0
+			RBC2AC[i][j].p1 = 0.015
+			RBC2AC[i][j].p2 = 0.58
+            RBC2AC[i][j].v_th = v_th_RBC2AC
+		}		
+	}
+
+
+	// ONCB -> ONGC
+	print "EX : ONCB -> ONGC"
+	for i = 0, Num_ONGC-1{
+		ONCB2ONGC[i][i] = new ribbon_syn()
+		ON_GC[i].soma ONCB2ONGC[i][i].loc(1)   // Post synaptic compartment
+		setpointer ONCB2ONGC[i][i].v_pre, ON_CBC[i].soma.v(1)
+
+        //ONCB2ONGC[i][i].e = -60
+		ONCB2ONGC[i][i].act = 0.0
+		ONCB2ONGC[i][i].p1 = 0.015
+		ONCB2ONGC[i][i].p2 = 0.58
+		ONCB2ONGC[i][i].v_th = -25		//normal:20
+		// ONCB2ONGC[i][j].v_th = -60	//pathological
+		ONCB2ONGC[i][i].v_slp = 5			
+	}
+
+	// OFFCB -> OFFGC
+	print "EX : OFFCB -> OFFGC"
+	for i = 0, Num_OFFGC-1{
+
+		OFFCB2OFFGC[i][i] = new ribbon_syn()
+		OFF_GC[i].soma OFFCB2OFFGC[i][i].loc(1)   // Post synaptic compartment
+		setpointer OFFCB2OFFGC[i][i].v_pre, OFF_CBC[i].soma.v(1)
+
+        //OFFCB2OFFGC[i][i].e = -60
+		OFFCB2OFFGC[i][i].act = 0.0
+		OFFCB2OFFGC[i][i].p1 = 0.015
+		OFFCB2OFFGC[i][i].p2 = 0.58
+		OFFCB2OFFGC[i][i].v_th = -45 	//normal:40
+		// OFFCB2OFFGC[i][j].v_th = -60	//pathological
+		OFFCB2OFFGC[i][i].v_slp = 6			
+	}
+
+	// OFFCB -> AIIAC
+	print "EX : OFFCB -> AIIAC"
+	for i = 0, Num_AC-1{
+		for j = 0, Num_OFFCBC-1{
+			OFFCB2AC[i][j] = new ribbon_syn()
+			AIIAC[i].soma OFFCB2AC[i][j].loc(1)   // Post synaptic compartment
+			setpointer OFFCB2AC[i][j].v_pre, OFF_CBC[j].soma.v(1)
+			
+            //OFFCB2AC[i][j].e = -46
+			OFFCB2AC[i][j].act = 0.0
+			OFFCB2AC[i][j].p1 = 0.015
+			OFFCB2AC[i][j].p2 = 0.58			
+            OFFCB2AC[i][j].v_th = v_th_OFFCB2AC
+		}
+	}
+}
+
+//============================//
+// Glu syn parameter setting  //
+//============================//
+
+
+proc Ribbon_syn_set() {local g_RB_AII, g_ONCB_ONGC, g_OFFCB_OFFGC
+	
+
+    // // Rod -> RBC
+    // for i = 0, Num_RBC - 1 {        
+    //     for j = 0, Num_R - 1 {      
+    //         // 各 Rod j に対して 2 スロット（j*2, j*2+1）
+    //         R2RB[i][j*2].g_max = g_R2RB
+    //         R2RB[i][j*2+1].g_max = g_R2RB
+    //     }
+    // }
+
+    // Rod -> RBC
+    for i = 0, Num_RBC - 1 {        
+        for j = 0, Num_R - 1 {      
+            // 各 Rod j に対して 2 スロット（j*2, j*2+1）
+            R2RB[i][j].g_max = g_R2RB
+        }
+    }
+
+	// Cone -> ONCBC
+	for i = 0, Num_ONCBC-1{
+		C2ONCB[i][i].g_max = g_C2ONCB 
+		// (origin)0.001
+	}
+
+	// RB -> AIIAC
+	for i = 0, Num_AC-1{
+		for j = 0, Num_RBC-1{
+			RBC2AC[i][j].g_max = g_RBC2AC  
+			//(origin)0.0012  g_RB_AII -> $1
+		}
+	}
+
+	// ONCB -> ONGC
+	for i = 0, Num_ONGC-1{
+		ONCB2ONGC[i][i].g_max = g_ONCB2ONGC 
+		// 0.013 g_ONCB_ONGC -> $2
+	}
+
+	// OFFCB -> OFFGC
+	for i = 0, Num_OFFGC-1{
+		OFFCB2OFFGC[i][i].g_max = g_OFFCB2OFFGC 
+		// 0.0 g_OFFCB_OFFGC -> $3
+	}
+
+	// OFFCB -> AIIAC
+	for i = 0, Num_AC-1{
+		for j = 0, Num_OFFCBC-1{
+			OFFCB2AC[i][j].g_max = g_OFFCB2AC  
+			// normal:0.001, pathological:0.0
+		}
+	}
+}	
+
+
+
+//=============================//
+// Glycinergic synapses(Inh)   //
+//-----------------------------//
+// AIIAC -> OFFGC              //
+// AIIAC -> OFFCB			   //
+//=============================//
+
+proc Gly_syn() {
+	// print "INH : Cones -> OFFCBC"
+	// for i = 0, Num_OFFCBC-1{
+	// 	C2OFFCB[i][i] = new depsyn()
+	// 	OFF_CBC[i].soma C2OFFCB[i][i].loc(1)   // Post synaptic compartment
+	// 	setpointer C2OFFCB[i][i].v_pre, Cones[i].soma.v(1)
+
+	// 	C2OFFCB[i][i].e = e_C2OFFCB  
+	// 	C2OFFCB[i][i].v_th = v_th_C2OFFCB
+	// 	C2OFFCB[i][i].v_slp = v_slp_C2OFFCB 	// (origin)20			
+	// 	C2OFFCB[i][i].tau_e = tau_e_C2OFFCB  //tau_e_AC_OFFCB 2.7
+	// 	C2OFFCB[i][i].tau_r = tau_r_C2OFFCB  //tau_r_AC_OFFCB 800
+	// 	//C2OFFCB[i][i].u = u_C2OFFCB //(origin)0.005
+	// 	//C2OFFCB[i][i].eff = eff_C2OFFCB
+	// 	//C2OFFCB[i][i].rec = rec_C2OFFCB
+
+	// 	C2OFFCB[i][i].g_max = g_C2OFFCB // (origin)0.00256
+	// }
+
+	// AIIAC -> OFFGC
+	print "INH : AIIAC -> OFFGC"
+	for i = 0, Num_OFFGC-1{
+		for j = 0, Num_AC-1{
+			AC2OFFGC[i][j] = new depsyn()
+			OFF_GC[i].soma AC2OFFGC[i][j].loc(1)
+			setpointer AC2OFFGC[i][j].v_pre, AIIAC[j].soma.v(1)
+
+            //AC2OFFGC[i][j].e = -46
+			AC2OFFGC[i][j].v_th = v_th_AC2OFFGC
+			AC2OFFGC[i][j].v_slp = v_slp_AC2OFFGC
+			AC2OFFGC[i][j].tau_e = tau_e_AC2OFFGC
+			AC2OFFGC[i][j].tau_r = tau_r_AC2OFFGC
+			AC2OFFGC[i][j].u = u_AC2OFFGC			
+		}
+	}
+
+    print "INH : AIIAC -> OFFCB"
+    for i = 0, Num_OFFCBC-1 {
+        for j = 0, Num_AC-1 {
+
+            AC2OFFCB[i][j] = new depsyn()
+            OFF_CBC[i].soma AC2OFFCB[i][j].loc(1)
+            setpointer AC2OFFCB[i][j].v_pre, AIIAC[j].soma.v(1)
+
+            AC2OFFCB[i][j].v_th  = v_th_AC2OFFCB
+            //AC2OFFCB[i][j].e     = -76
+            AC2OFFCB[i][j].v_slp = v_slp_AC2OFFCB
+            AC2OFFCB[i][j].tau_e = tau_e_AC2OFFCB
+            AC2OFFCB[i][j].tau_r = tau_r_AC2OFFCB
+            AC2OFFCB[i][j].u     = u_AC2OFFCB
+            
+        }
+    }
+}
+
+//Gly syn parameter setting
+
+proc Gly_syn_set() {
+
+	// AIIAC -> OFFGC
+	for i = 0, Num_OFFGC-1{
+		for j = 0, Num_AC-1{
+			AC2OFFGC[i][j].g_max = g_AC2OFFGC   
+			//default:0.003
+		}
+	}
+
+	// AIIAC -> OFFCB
+	for i = 0, Num_OFFCBC-1{
+		for j = 0, Num_AC-1{
+			AC2OFFCB[i][j].g_max = g_AC2OFFCB
+			//g_AC_OFFCB = 0.0001     //original
+			//g_AC_OFFCB = 0.001    //pathological model
+		}
+	}
+}
+
+// //===================//
+// //   Gap junction    //
+// //-------------------//
+// //  AIIAC <-> ONCB   //
+// //  AIIAC <-> AIIAC  //
+// //  OFFGC <-> OFFGC  //
+// //  ONCB <-> ONCB    //
+// //  OFFCB <-> OFFCB  //
+// //===================//
+
+// //※Need to write both pre->post and post->pre connection
+
+// Cone <-> Cone のGap結合（Cone1つにつき他のCone4つと結ぶ）
+proc Cone_GJ() {
+    print "Gap : Cone <-> Cone"
+	for i = 0, Num_C-1{
+		for j = 0, Num_C-1{
+			Gap_Cone[i][j] = new Gap(0.5)
+			Cones[i].soma Gap_Cone[i][j].loc(0.5)
+			setpointer Gap_Cone[i][j].vgap, Cones[j].soma.v(0.5)
+		}
+	}
+}
+
+
+proc Cone_GJ_set() {
+	for i = 0, Num_C-1{
+		for j = 0, Num_C-1{
+			Gap_Cone[i][j].g = gj_C2C 
+		}
+	}
+}
+
+//Rod <-> Cone
+proc R_C_GJ () { local rod, k
+    print "Gap : Rod <-> Cone"
+    for i = 0, Num_C-1 {           
+        for k = 0, R_cov-1 {             
+            rod = (i*10 + k) % Num_R
+            Gap_R_C[i][k] = new Gap(0.5)
+            Rods[rod].soma Gap_R_C[i][k].loc(0.5)         // Pre
+            setpointer Gap_R_C[i][k].vgap, Cones[i].soma.v(0.5) // Post
+        }
+    }
+}
+
+proc R_C_GJ_set () {
+    for i = 0, Num_C-1 {
+        for k = 0, R_cov-1 {
+            Gap_R_C[i][k].g = gj_R2C  
+        }
+    }
+}
+
+// AIIAC <-> AIIAC
+proc AC_GJ () {
+	print "Gap : AIIAC <-> AIIAC"
+	for i = 0, Num_AC-1{
+		for j = 0, Num_AC-1{
+			Gap_AC[i][j] = new Gap(0.5)
+			AIIAC[i].soma Gap_AC[i][j].loc(0.5)
+			setpointer Gap_AC[i][j].vgap, AIIAC[j].soma.v(0.5)
+		}
+	}
+}
+
+
+// AIIAC <-> AIIAC parameter setting
+proc AC_GJ_set () {
+	for i = 0, Num_AC-1{
+		for j = 0, Num_AC-1{
+			Gap_AC[i][j].g = gj_AC2AC 
+			//0.0002[uS]
+		}
+	}
+}
+
+// OFFGC <-> OFFGC
+proc OFFGC_GJ () {
+	print "Gap : OFFGC <-> OFFGC"
+	for i = 0, Num_OFFGC-1{
+		for j = 0, Num_OFFGC-1{
+			Gap_OFFGC[i][j] = new Gap(0.5)
+			OFF_GC[i].soma Gap_OFFGC[i][j].loc(0.5)
+			setpointer Gap_OFFGC[i][j].vgap, OFF_GC[j].soma.v(0.5)
+		}
+	}
+}
+
+// OFFGC <-> OFFGC parameter setting
+proc OFFGC_GJ_set () {
+	for i = 0, Num_OFFGC-1{
+		for j = 0, Num_OFFGC-1{
+			Gap_OFFGC[i][j].g = gj_OFFGC2OFFGC
+		}
+	}
+}
+
+
+//AIIAC <-> ONCB
+proc AC_ONBC_GJ () {
+	print "Gap : AIIAC <-> ONCB"
+	for i = 0, Num_AC-1{
+		for j = 0, Num_ONCBC-1{  //15
+			Gap_AC_ONBC[i][j] = new Gap(0.5)
+			AIIAC[i].soma Gap_AC_ONBC[i][j].loc(0.5)
+			setpointer Gap_AC_ONBC[i][j].vgap, ON_CBC[j].soma.v(0.5)
+		}
+	}
+	for i = 0, Num_ONCBC-1{  //15
+		for j = 0, Num_AC-1{
+			Gap_ONBC_AC[i][j] = new Gap(0.5)
+			ON_CBC[i].soma Gap_ONBC_AC[i][j].loc(0.5)
+			setpointer Gap_ONBC_AC[i][j].vgap, AIIAC[j].soma.v(0.5)			
+		}
+	}
+}
+
+// AIIAC <-> ONCB parameter setting
+proc AC_ONBC_GJ_set (){
+	for i = 0, Num_AC-1{
+		for j = 0, Num_ONCBC-1{  //15
+			Gap_AC_ONBC[i][j].g = gj_AC2CB 
+			//gj_AC_ONCB
+		}
+	}
+	for i = 0, Num_ONCBC-1 {  //15
+		for j = 0, Num_AC-1{
+			Gap_ONBC_AC[i][j].g = gj_AC2CB 
+			//gj_AC_ONCB
+		}
+	}
+}
+
+
+
+// ================================================
+//  Num_ONCBC を 11 に合わせたリファクタリング版
+//  （コメント・書き方・ロジックはオリジナルを維持）
+// ================================================
+
+//  ONCB <-> ONCB
+objref Gap_ONCB_alpha[18]
+objref Gap_ONCB_alpha_inv[18]
+objref Gap_ONCB_beta[8]
+objref Gap_ONCB_beta_inv[8]
+objref Gap_ONCB_gamma[3]
+objref Gap_ONCB_gamma_inv[3]
+objref Gap_ONCB_delta[36]
+objref Gap_ONCB_delta_inv[36]
+
+proc ONCB_GJ () { local k,l,m,n,j
+	print "Gap : ONCB <-> ONCB"
+	k = 0
+	l = 0
+	m = 0
+	n = 0
+
+	for i = 0, Num_ONCBC-1 {
+
+		// 斜め右下 and 左下
+		if(i == 0 || i == 1 || i == 2 || i == 8 || i == 9 || i == 10 || i == 16 || i == 17 || i == 18){
+			// 斜め左下方向接続
+			if (i+3 < Num_ONCBC) {
+				Gap_ONCB_alpha[k] = new Gap(0.5)
+				ON_CBC[i].soma  Gap_ONCB_alpha[k].loc(0.5)
+				setpointer Gap_ONCB_alpha[k].vgap, ON_CBC[i+3].soma.v(0.5)
+
+				Gap_ONCB_alpha_inv[k] = new Gap(0.5)
+				ON_CBC[i+3].soma  Gap_ONCB_alpha_inv[k].loc(0.5)
+				setpointer Gap_ONCB_alpha_inv[k].vgap, ON_CBC[i].soma.v(0.5)
+
+				k = k + 1
+			}
+			// 斜め右下方向接続
+			if (i+4 < Num_ONCBC) {
+				Gap_ONCB_alpha[k] = new Gap(0.5)
+				ON_CBC[i].soma  Gap_ONCB_alpha[k].loc(0.5)
+				setpointer Gap_ONCB_alpha[k].vgap, ON_CBC[i+4].soma.v(0.5)
+
+				Gap_ONCB_alpha_inv[k] = new Gap(0.5)
+				ON_CBC[i+4].soma  Gap_ONCB_alpha_inv[k].loc(0.5)
+				setpointer Gap_ONCB_alpha_inv[k].vgap, ON_CBC[i].soma.v(0.5)
+
+				k = k + 1
+			}
+		}
+
+		// 斜め右下 or 左下
+		if(i == 7 || i == 15 || i == 18) {
+			// 斜め左下
+			if(i == 18 && i+3 < Num_ONCBC) {
+				Gap_ONCB_gamma[l] = new Gap(0.5)
+				ON_CBC[i].soma Gap_ONCB_gamma[l].loc(0.5)
+				setpointer Gap_ONCB_gamma[l].vgap, ON_CBC[i+3].soma.v(0.5)
+
+				Gap_ONCB_gamma_inv[l] = new Gap(0.5)
+				ON_CBC[i+3].soma Gap_ONCB_gamma_inv[l].loc(0.5)
+				setpointer Gap_ONCB_gamma_inv[l].vgap, ON_CBC[i].soma.v(0.5)
+
+				l = l + 1
+			}
+			// 斜め右下
+			if((i == 7 || i == 15) && i+4 < Num_ONCBC) {
+				Gap_ONCB_gamma[l] = new Gap(0.5)
+				ON_CBC[i].soma  Gap_ONCB_gamma[l].loc(0.5)
+				setpointer Gap_ONCB_gamma[l].vgap, ON_CBC[i+4].soma.v(0.5)
+
+				Gap_ONCB_gamma_inv[l] = new Gap(0.5)
+				ON_CBC[i+4].soma  Gap_ONCB_gamma_inv[l].loc(0.5)
+				setpointer Gap_ONCB_gamma_inv[l].vgap, ON_CBC[i].soma.v(0.5)
+
+				l = l + 1
+			}
+		}
+
+		// 縦方向
+		if(i == 3 || i == 4 || i == 5 || i == 6 || i == 11 || i == 12 || i == 13 || i == 14) {
+			if (i+4 < Num_ONCBC) {
+				Gap_ONCB_beta[m] = new Gap(0.5)
+				ON_CBC[i].soma Gap_ONCB_beta[m].loc(0.5)
+				setpointer Gap_ONCB_beta[m].vgap, ON_CBC[i+4].soma.v(0.5)
+
+				Gap_ONCB_beta_inv[m] = new Gap(0.5)
+				ON_CBC[i+4].soma Gap_ONCB_beta_inv[m].loc(0.5)
+				setpointer Gap_ONCB_beta_inv[m].vgap, ON_CBC[i].soma.v(0.5)
+
+				m = m + 1
+			}
+		}
+
+		// 放射状（Num_ONCBC = 11 では該当なし）——コードは保持
+		if(i == 22 || i == 23 || i == 24 || i == 25 || i == 26 || i == 27){
+			if(i == 22 || i == 23 || i == 24){
+				j = i - 22
+			}
+			if(i == 25 || i == 26 ){
+				j = i - 17
+			}
+
+			if(j < Num_ONCBC){
+				Gap_ONCB_delta[n] = new Gap(0.5)
+				ON_CBC[i].soma  Gap_ONCB_delta[n].loc(0.5)
+				setpointer Gap_ONCB_delta[n].vgap, ON_CBC[j].soma.v(0.5)
+
+				Gap_ONCB_delta_inv[n] = new Gap(0.5)
+				ON_CBC[j].soma  Gap_ONCB_delta_inv[n].loc(0.5)
+				setpointer Gap_ONCB_delta_inv[n].vgap, ON_CBC[i].soma.v(0.5)
+
+				n = n + 1
+			}
+
+			if(j+3 < Num_ONCBC){
+				Gap_ONCB_delta[n] = new Gap(0.5)
+				ON_CBC[i].soma  Gap_ONCB_delta[n].loc(0.5)
+				setpointer Gap_ONCB_delta[n].vgap, ON_CBC[j+3].soma.v(0.5)
+
+				Gap_ONCB_delta_inv[n] = new Gap(0.5)
+				ON_CBC[j+3].soma  Gap_ONCB_delta_inv[n].loc(0.5)
+				setpointer Gap_ONCB_delta_inv[n].vgap, ON_CBC[i].soma.v(0.5)
+
+				n = n + 1
+			}
+
+			if(j+4 < Num_ONCBC){
+				Gap_ONCB_delta[n] = new Gap(0.5)
+				ON_CBC[i].soma  Gap_ONCB_delta[n].loc(0.5)
+				setpointer Gap_ONCB_delta[n].vgap, ON_CBC[j+4].soma.v(0.5)
+
+				Gap_ONCB_delta_inv[n] = new Gap(0.5)
+				ON_CBC[j+4].soma  Gap_ONCB_delta_inv[n].loc(0.5)
+				setpointer Gap_ONCB_delta_inv[n].vgap, ON_CBC[i].soma.v(0.5)
+
+				n = n + 1
+			}
+
+			if(j+7 < Num_ONCBC){
+				Gap_ONCB_delta[n] = new Gap(0.5)
+				ON_CBC[i].soma  Gap_ONCB_delta[n].loc(0.5)
+				setpointer Gap_ONCB_delta[n].vgap, ON_CBC[j+7].soma.v(0.5)
+
+				Gap_ONCB_delta_inv[n] = new Gap(0.5)
+				ON_CBC[j+7].soma  Gap_ONCB_delta_inv[n].loc(0.5)
+				setpointer Gap_ONCB_delta_inv[n].vgap, ON_CBC[i].soma.v(0.5)
+
+				n = n + 1
+			}
+
+			if(j+8 < Num_ONCBC){
+				Gap_ONCB_delta[n] = new Gap(0.5)
+				ON_CBC[i].soma  Gap_ONCB_delta[n].loc(0.5)
+				setpointer Gap_ONCB_delta[n].vgap, ON_CBC[j+8].soma.v(0.5)
+
+				Gap_ONCB_delta_inv[n] = new Gap(0.5)
+				ON_CBC[j+8].soma  Gap_ONCB_delta_inv[n].loc(0.5)
+				setpointer Gap_ONCB_delta_inv[n].vgap, ON_CBC[i].soma.v(0.5)
+
+				n = n + 1
+			}
+
+			if(j+11 < Num_ONCBC){
+				Gap_ONCB_delta[n] = new Gap(0.5)
+				ON_CBC[i].soma  Gap_ONCB_delta[n].loc(0.5)
+				setpointer Gap_ONCB_delta[n].vgap, ON_CBC[j+11].soma.v(0.5)
+
+				Gap_ONCB_delta_inv[n] = new Gap(0.5)
+				ON_CBC[j+11].soma  Gap_ONCB_delta_inv[n].loc(0.5)
+				setpointer Gap_ONCB_delta_inv[n].vgap, ON_CBC[i].soma.v(0.5)
+
+				n = n + 1
+			}
+		}
+	}
+}
+
+proc ONCB_GJ_set () {
+	for i = 0, 17{
+		if(object_id(Gap_ONCB_alpha[i]))      Gap_ONCB_alpha[i].g     = 0.00072
+		if(object_id(Gap_ONCB_alpha_inv[i]))  Gap_ONCB_alpha_inv[i].g = 0.00072
+	}
+	for i = 0, 7{
+		if(object_id(Gap_ONCB_beta[i]))       Gap_ONCB_beta[i].g     = 0.00072
+		if(object_id(Gap_ONCB_beta_inv[i]))   Gap_ONCB_beta_inv[i].g = 0.00072
+	}
+	for i = 0, 2{
+		if(object_id(Gap_ONCB_gamma[i]))      Gap_ONCB_gamma[i].g     = 0.00072
+		if(object_id(Gap_ONCB_gamma_inv[i]))  Gap_ONCB_gamma_inv[i].g = 0.00072
+	}
+	for i = 0, 35{
+		if(object_id(Gap_ONCB_delta[i]))      Gap_ONCB_delta[i].g     = 0.00072
+		if(object_id(Gap_ONCB_delta_inv[i]))  Gap_ONCB_delta_inv[i].g = 0.00072
+	}
+}
+
+
+// ================================================
+//  Num_OFFCBC を 24 にした完全リファクタリング版
+//  （コメント・書き方・ロジックはオリジナルを維持）
+// ================================================
+                    // ★追加: OFF_CBC 配列を Num_OFFCBC 要素で宣言
+
+// OFFCB <-> OFFCB
+objref Gap_OFFCB_alpha_one[32]
+objref Gap_OFFCB_alpha_one_inv[32]
+double Gap_OFFCB_alpha_one_arr[16]
+Gap_OFFCB_alpha_one_arr[0] = 0
+Gap_OFFCB_alpha_one_arr[1] = 1
+Gap_OFFCB_alpha_one_arr[2] = 2
+Gap_OFFCB_alpha_one_arr[3] = 3
+Gap_OFFCB_alpha_one_arr[4] = 10
+Gap_OFFCB_alpha_one_arr[5] = 11
+Gap_OFFCB_alpha_one_arr[6] = 12
+Gap_OFFCB_alpha_one_arr[7] = 13
+Gap_OFFCB_alpha_one_arr[8] = 30
+Gap_OFFCB_alpha_one_arr[9] = 31
+Gap_OFFCB_alpha_one_arr[10] = 32
+Gap_OFFCB_alpha_one_arr[11] = 33
+Gap_OFFCB_alpha_one_arr[12] = 40
+Gap_OFFCB_alpha_one_arr[13] = 41
+Gap_OFFCB_alpha_one_arr[14] = 42
+Gap_OFFCB_alpha_one_arr[15] = 43
+
+objref Gap_OFFCB_alpha_two[8]
+objref Gap_OFFCB_alpha_two_inv[8]
+double Gap_OFFCB_alpha_two_arr[4]
+Gap_OFFCB_alpha_two_arr[0] = 19
+Gap_OFFCB_alpha_two_arr[1] = 20
+Gap_OFFCB_alpha_two_arr[2] = 21
+Gap_OFFCB_alpha_two_arr[3] = 22
+
+objref Gap_OFFCB_beta[20]
+objref Gap_OFFCB_beta_inv[20]
+double Gap_OFFCB_beta_arr[20]
+Gap_OFFCB_beta_arr[0] = 4
+Gap_OFFCB_beta_arr[1] = 5
+Gap_OFFCB_beta_arr[2] = 6
+Gap_OFFCB_beta_arr[3] = 7
+Gap_OFFCB_beta_arr[4] = 8
+Gap_OFFCB_beta_arr[5] = 14
+Gap_OFFCB_beta_arr[6] = 15
+Gap_OFFCB_beta_arr[7] = 16
+Gap_OFFCB_beta_arr[8] = 17
+Gap_OFFCB_beta_arr[9] = 18
+// (24以上のインデックスは削除)
+
+objref Gap_OFFCB_gamma[5]
+objref Gap_OFFCB_gamma_inv[5]
+double Gap_OFFCB_gamma_arr[2]
+Gap_OFFCB_gamma_arr[0] = 9
+Gap_OFFCB_gamma_arr[1] = 23
+// (29,39,43 は削除)
+
+// delta 配列は元のまま objref / double 定義のみ
+objref Gap_OFFCB_delta[96]
+objref Gap_OFFCB_delta_inv[96]
+double Gap_OFFCB_delta_arr[16]   // 未使用保持
+
+// ------------------------------------------------------------
+// OFFCB <-> OFFCB GJ 構築
+// ------------------------------------------------------------
+proc OFFCB_GJ () { local k,j,down,left,right,dammy,i
+    print "Gap : OFFCB <-> OFFCB"
+    
+    // 斜め左下 and 斜め右下接続(one)
+    for i = 0, 15 {
+        k = i * 2
+        j = Gap_OFFCB_alpha_one_arr[i]
+        if (j < Num_OFFCBC && j+4 < Num_OFFCBC) {
+            Gap_OFFCB_alpha_one[k] = new Gap(0.5)
+            OFF_CBC[j].soma Gap_OFFCB_alpha_one[k].loc(0.5)
+            setpointer Gap_OFFCB_alpha_one[k].vgap, OFF_CBC[j+4].soma.v(0.5)
+            Gap_OFFCB_alpha_one_inv[k] = new Gap(0.5)
+            OFF_CBC[j+4].soma Gap_OFFCB_alpha_one_inv[k].loc(0.5)
+            setpointer Gap_OFFCB_alpha_one_inv[k].vgap, OFF_CBC[j].soma.v(0.5)
+        }
+        if (j < Num_OFFCBC && j+5 < Num_OFFCBC) {
+            Gap_OFFCB_alpha_one[k+1] = new Gap(0.5)
+            OFF_CBC[j].soma Gap_OFFCB_alpha_one[k+1].loc(0.5)
+            setpointer Gap_OFFCB_alpha_one[k+1].vgap, OFF_CBC[j+5].soma.v(0.5)
+            Gap_OFFCB_alpha_one_inv[k+1] = new Gap(0.5)
+            OFF_CBC[j+5].soma Gap_OFFCB_alpha_one_inv[k+1].loc(0.5)
+            setpointer Gap_OFFCB_alpha_one_inv[k+1].vgap, OFF_CBC[j].soma.v(0.5)
+        }
+    }
+
+    // 斜め左下 and 斜め右下接続(two)
+    for i = 0, 3 {
+        k = i * 2
+        j = Gap_OFFCB_alpha_two_arr[i]
+        if (j < Num_OFFCBC && j+5 < Num_OFFCBC) {
+            Gap_OFFCB_alpha_two[k] = new Gap(0.5)
+            OFF_CBC[j].soma Gap_OFFCB_alpha_two[k].loc(0.5)
+            setpointer Gap_OFFCB_alpha_two[k].vgap, OFF_CBC[j+5].soma.v(0.5)
+            Gap_OFFCB_alpha_two_inv[k] = new Gap(0.5)
+            OFF_CBC[j+5].soma Gap_OFFCB_alpha_two_inv[k].loc(0.5)
+            setpointer Gap_OFFCB_alpha_two_inv[k].vgap, OFF_CBC[j].soma.v(0.5)
+        }
+        if (j < Num_OFFCBC && j+6 < Num_OFFCBC) {
+            Gap_OFFCB_alpha_two[k+1] = new Gap(0.5)
+            OFF_CBC[j].soma Gap_OFFCB_alpha_two[k+1].loc(0.5)
+            setpointer Gap_OFFCB_alpha_two[k+1].vgap, OFF_CBC[j+6].soma.v(0.5)
+            Gap_OFFCB_alpha_two_inv[k+1] = new Gap(0.5)
+            OFF_CBC[j+6].soma Gap_OFFCB_alpha_two_inv[k+1].loc(0.5)
+            setpointer Gap_OFFCB_alpha_two_inv[k+1].vgap, OFF_CBC[j].soma.v(0.5)
+        }
+    }
+
+    // 縦方向接続 (beta)
+    for i = 0, 9 {
+        j = Gap_OFFCB_beta_arr[i]
+        if (j < Num_OFFCBC && j+5 < Num_OFFCBC) {
+            Gap_OFFCB_beta[i] = new Gap(0.5)
+            OFF_CBC[j].soma Gap_OFFCB_beta[i].loc(0.5)
+            setpointer Gap_OFFCB_beta[i].vgap, OFF_CBC[j+5].soma.v(0.5)
+            Gap_OFFCB_beta_inv[i] = new Gap(0.5)
+            OFF_CBC[j+5].soma Gap_OFFCB_beta_inv[i].loc(0.5)
+            setpointer Gap_OFFCB_beta_inv[i].vgap, OFF_CBC[j].soma.v(0.5)
+        }
+    }
+
+    // 斜め接続 (gamma)
+    for i = 0, 1 {
+        j = Gap_OFFCB_gamma_arr[i]
+        if (j < Num_OFFCBC && j+5 < Num_OFFCBC) {
+            Gap_OFFCB_gamma[i] = new Gap(0.5)
+            OFF_CBC[j].soma Gap_OFFCB_gamma[i].loc(0.5)
+            setpointer Gap_OFFCB_gamma[i].vgap, OFF_CBC[j+5].soma.v(0.5)
+            Gap_OFFCB_gamma_inv[i] = new Gap(0.5)
+            OFF_CBC[j+5].soma Gap_OFFCB_gamma_inv[i].loc(0.5)
+            setpointer Gap_OFFCB_gamma_inv[i].vgap, OFF_CBC[j].soma.v(0.5)
+        }
+    }
+
+    // 放射状 (delta) 部分は Num_OFFCBC=24 では不要なのでスキップ
+}
+
+// ------------------------------------------------------------
+// OFFCB <-> OFFCB parameter setting
+// ------------------------------------------------------------
+proc OFFCB_GJ_set () {
+    // alpha_one
+    for i = 0, 31 {
+        if (object_id(Gap_OFFCB_alpha_one[i]))     Gap_OFFCB_alpha_one[i].g     = 0.00072
+        if (object_id(Gap_OFFCB_alpha_one_inv[i])) Gap_OFFCB_alpha_one_inv[i].g = 0.00072
+    }
+    // alpha_two
+    for i = 0, 7 {
+        if (object_id(Gap_OFFCB_alpha_two[i]))     Gap_OFFCB_alpha_two[i].g     = 0.00072
+        if (object_id(Gap_OFFCB_alpha_two_inv[i])) Gap_OFFCB_alpha_two_inv[i].g = 0.00072
+    }
+    // beta
+    for i = 0, 9 {
+        if (object_id(Gap_OFFCB_beta[i]))     Gap_OFFCB_beta[i].g     = 0.00072
+        if (object_id(Gap_OFFCB_beta_inv[i])) Gap_OFFCB_beta_inv[i].g = 0.00072
+    }
+    // gamma
+    for i = 0, 1 {
+        if (object_id(Gap_OFFCB_gamma[i]))     Gap_OFFCB_gamma[i].g     = 0.00072
+        if (object_id(Gap_OFFCB_gamma_inv[i])) Gap_OFFCB_gamma_inv[i].g = 0.00072
+    }
+}

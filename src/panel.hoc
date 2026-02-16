@@ -1,0 +1,43 @@
+objref menubox1
+
+proc make_panel() {
+    menubox1 = new VBox()
+    menubox1.intercept(1)
+    xpanel("set parameters")
+
+    //============//
+    // Ribbon syn //
+    //============//
+    // ONCB -> ONGC
+    xvalue("g_ONCB_ONGC","g_ONCB_ONGC",1,"Ribbon_syn_set()")
+    // OFFCB -> OFFGC
+    xvalue("g_OFFCB_OFFGC","g_OFFCB_OFFGC",1,"Ribbon_syn_set()")
+    // Rod -> AIIAC
+    xvalue("g_RB_AII","g_RB_AII",1,"Ribbon_syn_set()")
+    // OFFCB -> AIIAC
+    //xvalue("g_RB_AII","g_RB_AII",1,"Ribbon_syn_set()")
+
+    //=========//
+    // Gly syn //
+    //=========//
+    xvalue("g_AC_OFFGC","g_AC_OFFGC",1,"Gly_syn_set()")
+
+    //===============//
+    // Gap junction  //
+    //===============//
+    // AIIAC <-> AIIAC
+    xvalue("gj_AC_AC","gj_AC_AC",1,"AC_GJ_set()")
+    // AIIAC <-> ONCB
+    xvalue("gj_AC_ONCB","gj_AC_ONCB",1,"ACBC_GJ_set()")
+
+
+
+    // xvalue("input2ONCBC_amp","input2ONCBC_amp",1,"iclamps_set()")
+    // xvalue("input2OFFCBC_amp","input2OFFCBC_amp",1,"iclamps_set()")
+    
+    xpanel()
+    menubox1.intercept(0)
+    menubox1.map()
+}
+
+make_panel()

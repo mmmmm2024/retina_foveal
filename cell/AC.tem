@@ -1,0 +1,84 @@
+begintemplate AC
+
+public soma, arm, is, vc, ic
+create soma, arm, is
+objref vc //voltage clamp
+objref ic //current clamp
+
+proc init() {
+    create soma, arm, is
+    soma {
+
+        //figure
+
+        L=25
+        diam=25
+        Ra=150
+        nseg=1
+
+        //channel
+
+        insert pas
+        g_pas=0.00002  //addd
+        e_pas=-65  //add
+        insert A  //A-type
+        gIAbar_A=0.004//(S/cm^2)
+        ek=-77
+
+        //Voltage clamp
+
+        //vc = new VClamp(0.5)
+        // vc.dur[0]=6000
+        // vc.amp[0]=-80
+        ////ic = new IClamp(0.5)
+        }
+
+        arm {
+
+            //figure
+
+            L=32
+            diam=0.3
+            Ra=150
+            nseg=1
+
+
+            //channel
+
+            insert pas
+            g_pas=0.00002
+            e_pas=-63
+        }
+
+        is {
+            //figure
+
+            L=2
+            diam=2
+            Ra=150
+            nseg=1
+
+
+            //channel
+            insert pas
+            g_pas=0.00002  //addd
+            e_pas=-63  //add
+
+            insert HHna
+            gnabar_HHna=0.2
+            ena=50
+
+            insert Ik  //K-type
+            gIkbar_Ik=0.03
+            ek=-77
+
+            insert A  //A-type
+            gIAbar_A=0.08
+            ek=-77
+        }
+
+        connect arm(0), soma(1)
+        connect is(0), arm(1)
+}	// end init()
+
+endtemplate AC

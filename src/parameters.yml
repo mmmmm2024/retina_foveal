@@ -1,0 +1,135 @@
+# =========================================
+# Simulation Parameters
+# =========================================
+simulation:
+  enable_graphical_interface: true
+  tstop_ms: 6000          # total simulation time (ms)
+  step_dt_ms: 0.025       # simulation step (ms)
+
+# =========================================
+# Cell Parameters
+#  - ロッド(Rod)
+#  - コーン(Cone)
+#  - AII アマクリン (AIIAC)
+#  - Rod Bipolar (RBC)
+#  - ON Cone Bipolar (ONCBC)
+#  - OFF Cone Bipolar (OFFCBC)
+#  - ON Ganglion (ONGC)
+#  - OFF Ganglion (OFFGC)
+# =========================================
+cells:
+
+  rod:
+    number: 1             # Num_R
+    coverage: 100         # R_cov
+    noise_mean: 0.0
+    noise_std: 0.0
+    kr: 0                 # 結合定数 (0~4の範囲)
+    amp_input: 40         # 入力電流の振幅
+
+  cone:
+    number: 1             # Num_C
+    coverage: 4           # C_cov
+    noise_mean: 0.0
+    noise_std: 0.0
+
+  aii_ac:
+    number: 1             # Num_AC
+    noise_mean: 0.0
+    noise_std: 0.002
+    ka: 0                 # 結合定数 (0~4の範囲)
+
+  r_bipolar:
+    number: 1             # Num_RBC
+    noise_mean: 0.0
+    noise_std: 0.0004
+
+  on_cbipolar:
+    number: 1             # Num_ONCBC
+    noise_mean: 0.0
+    noise_std: 0.0004
+
+  off_cbipolar:
+    number: 1             # Num_OFFCBC
+    noise_mean: 0.0
+    noise_std: 0.0004
+
+  on_gc:
+    number: 1             # Num_ONGC
+    noise_mean: 0.003
+    noise_std: 0.0004
+
+  off_gc:
+    number: 1             # Num_OFFGC
+    noise_mean: 0.003
+    noise_std: 0.005
+
+# =========================================
+# Connection (Synapse & GapJunction) Parameters
+# =========================================
+connections:
+  # ------------------
+  # Gap Junction
+  # ------------------
+  gap_junction:
+    aiiac_oncb: 0.00050   # gj_AC_ONCB
+    rod_rod: 0.0005       # gj_R_R
+    rod_cone: 0.0002      # gj_R_C
+    aiiac_aiiac: 0.00008  # gj_AC_AC
+    aiiac_cb: 0.0002      # gj_AC_CB
+    offgc_offgc: 0.001    # gj_OFFGC_OFFGC
+    oncb_oncb: 0.001      # gj_ONCB_ONCB
+    offcb_offcb: 0.001    # gj_OFFCB_OFFCB
+
+  # ------------------
+  # Excitatory Synapses (Glu)
+  # ------------------
+  excitatory:
+    # normal / pathological を両方保持する例
+    g_rb_aii:
+      normal: 0.0012
+      pathological: 0.0
+    g_oncb_ongc:
+      normal: 0.013
+      pathological: 0.011
+    g_offcb_offgc:
+      normal: 0.013
+      pathological: 0.0
+    g_offcb_aii:
+      normal: 0.0001
+      pathological: 0.0
+
+  # ------------------
+  # Inhibitory Synapses (Gly)
+  # ------------------
+  inhibitory:
+    # AIIAC -> OFFCB
+    aiiac_offcb:
+      g_max: 0.0001
+      v_th: -30
+      v_slp: 10
+      tau_e: 25
+      tau_r: 800
+      u: 0.2
+
+    # AIIAC -> OFFGC
+    aiiac_offgc:
+      g_max: 0.003
+      e_syn: -65
+      v_th: -30
+      v_slp: 10
+      tau_e: 25
+      tau_r: 800
+      u: 0.2
+
+  # ------------------
+  # Publio Syn (別途定義されているもの？)
+  # ------------------
+  publio_syn:
+    g_max: 0.00256
+    e_syn: 0
+    v_th: -30
+    v_slp: 10
+    tau: 10
+    # u: 0.2  # 必要なら定義
+

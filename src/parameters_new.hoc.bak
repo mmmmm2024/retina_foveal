@@ -1,0 +1,332 @@
+//======================================
+// Simulation Parameters
+//======================================
+ENABLE_GRAPHICAL_INTERFACE = 1
+tstop           = 6000        // (ms) total simulation time 6000ms
+step_dt         = 0.0625     // (ms) simulation step (original: 0.005)
+
+//======================================
+// Cell Parameters
+//--------------------------------------
+//  Rod, Cone
+//   Rod Bipolar (RBC),ON Cone Bipolar (ONCBC), OFF Cone Bipolar (OFFCBC)
+//   AIIAC(AC)
+//  ON Ganglion (ONGC), OFF Ganglion (OFFGC)
+//======================================
+
+//--------------------------------------
+// Rod
+//--------------------------------------
+Num_R           = 1
+// (Publio: 1500)
+noise_mean_R    = 0.003
+//0.003(default)
+noise_std_R     = 0.0004
+tau_noise_R     = 5.0
+seed_noise_R    = 1
+kr              = 0           // coupling constant (0~4)
+R_cov           = 10         // coverage R2RB
+//-------------
+//input to Rod
+//-------------
+//Input_rod
+AMP             = 50          
+stim            = 2000    //del 刺激開始時間
+num_stim        = 1       //イベント回数
+ton_stim        = 1000    //刺激時間
+toff_stim       = 0       //無刺激時間
+
+//InputDim_rod
+stim_Dim        = stim
+num_Dim         = num_stim
+ton_Dim         = ton_stim
+toff_Dim        = toff_stim
+ssI_Dim         = 0       
+amp_Dim         = 0
+
+// del        = 2000        // (ms) 刺激開始時刻
+// on         = 6000        // (ms) 刺激終了時刻
+// gihbar     = 2.5
+
+//--------------------------------------
+// Cone
+//--------------------------------------
+Num_C           = 20
+Num_C_RP        = 0
+//(Publio: 16)
+noise_mean_C    = 0.003
+noise_std_C     = 0.0004
+tau_noise_C     = 5.0
+seed_noise_C    = 3
+C_cov           = 4           // coverage
+//---------------
+//Input to Cones
+//---------------
+AMP_C           = AMP
+stim_C          = stim
+num_stim2C      = num_stim
+ton_C           = ton_stim
+toff_C          = toff_stim
+ssI_C           = 40
+
+//--------------------------------------
+// AII Amacrine Cell (AIIAC)
+//--------------------------------------
+Num_AC          = 8
+//4
+//1
+noise_mean_AC   = 0.003
+noise_std_AC    = 0.0004
+tau_noise_AC    = 5.0
+seed_noise_AC   = 5
+ka              = 0           // coupling constant (0~4)
+
+//--------------------------------------
+// Rod Bipolar (RBC)
+//--------------------------------------
+Num_RBC         = 32
+//16
+//4
+// 例: Publioでは100, Tadaでは126, paperでは173など
+noise_mean_RBC  = 0.003
+noise_std_RBC   = 0.0004
+tau_noise_RBC   = 5.0
+seed_noise_RBC  = 3
+
+//--------------------------------------
+// ON Cone Bipolar (ONCBC)
+//--------------------------------------
+Num_ONCBC           = 20  
+//(Fovea)11
+// 論文により28, 55など
+noise_mean_ONCBC    = 0.003
+noise_std_ONCBC     = 0.0004
+tau_noise_ONCBC     = 5.0
+seed_noise_ONCBC    = 5
+
+//--------------------------------------
+// OFF Cone Bipolar (OFFCBC)
+//--------------------------------------
+Num_OFFCBC          = 20
+//24
+noise_mean_OFFCBC   = 0.003
+noise_std_OFFCBC    = 0.0004
+tau_noise_OFFCBC    = 5.0
+seed_noise_OFFCBC   = 5
+
+//--------------------------------------
+// ON Ganglion (ONGC)
+//--------------------------------------
+Num_ONGC            = 20
+noise_mean_ONGC     = 0.003   // (ex: 0.005)
+noise_std_ONGC      = 0.0004  // (ex: 0.002)
+tau_noise_ONGC      = 5.0
+seed_noise_ONGC     = 5
+
+//--------------------------------------
+// OFF Ganglion (OFFGC)
+//--------------------------------------
+Num_OFFGC           = 20      // (origin=5)
+noise_mean_OFFGC    = 0.003
+noise_std_OFFGC     = 0.005
+tau_noise_OFFGC     = 5.0
+seed_noise_OFFGC    = 5 //(origin=5)
+
+
+
+//======================================
+// Connection Parameters
+//--------------------------------------
+//   Gap Junction
+//     - AIIAC <-> ONCB
+//     - AIIAC <-> AIIAC
+//     - OFFGC <-> OFFGC
+//     - R <-> R, R <-> C など
+//   Glu syn (Ex)
+//     - Rod -> AIIAC
+//     - ONCB -> ONGC
+//     - OFFCB -> OFFGC
+//     - OFFCB -> AIIAC
+//   Gly syn (Inh)
+//     - AIIAC -> OFFGC
+//     - AIIAC -> OFFCB
+//======================================
+
+//--------------------------------------
+// Gap Junction
+//--------------------------------------
+// AIIAC <-> ONCB
+gj_AC_ONCB          = 0.00010 * 4.2   // original 0.00050
+// Ahnelt et al., gj=100 pS
+
+
+// R <-> R
+gj_C2C              = 0.0001 * 4.8 * 3.2 / 4.1    
+//[uS] Tsukamoto et al
+// R <-> C
+gj_R2C              = 0.0001 * 5     // [uS]
+// AIIAC <-> AIIAC
+gj_AC2AC            = 0.00008    // [uS]
+//gj_AC2AC            = 0.0
+
+// AIIAC <-> Cone Bipolar
+gj_AC2CB            = 0.0005
+
+// OFFGC <-> OFFGC
+gj_OFFGC2OFFGC      = 0.001      // [uS]
+// ONCB <-> ONCB
+gj_ONCB2ONCB        = 0.001     // [uS]
+// OFFCB <-> OFFCB
+gj_OFFCB2OFFCB      = 0.001      // [uS]
+
+//--------------------------------------
+// Glutamatergic Synapses (Excitatory)
+//--------------------------------------
+//Rods -> RBC
+act_R2RB            = 0.0
+p1_R2RB             = 0.015
+p2_R2RB             = 0.58
+w_R2RB              = 0
+u_R2RB              = 0
+v_th_R2RB           = -40
+v_slp_R2RB          = 10
+alpha_R2RB          = 1
+beta_R2RB           = 1.1
+tau_1A_R2RB         = 2
+
+g_R2RB              = 0.0
+
+//Cones -> ONCBC
+//e_C2ONCB           = -45
+act_C2ONCB          = 0.0
+p1_C2ONCB           = 0.015
+p2_C2ONCB           = 0.58
+//w_C2ONCB          = 0
+v_th_C2ONCB         = -40
+v_slp_C2ONCB        = 10
+alpha_C2ONCB        = 1
+beta_C2ONCB         = 1.1
+tau_1A_C2ONCB       = 2
+tau_21_C2ONCB       = 700
+tau_32_C2ONCB       = 2000
+tau_A3_C2ONCB       = 10000
+g_C2ONCB            = 0.005
+
+// Cones -> OFFCBC
+e_C2OFFCB           = 0
+act_C2OFFCB          = 0.0
+p1_C2OFFCB           = 0.015
+p2_C2OFFCB           = 0.58
+w_C2OFFCB            = 0
+u_C2OFFCB            = 0
+v_th_C2OFFCB         = -40
+v_slp_C2OFFCB        = 5
+alpha_C2OFFCB        = 2.0
+beta_C2OFFCB         = 0.4
+tau_1A_C2OFFCB       = 15
+tau_21_C2OFFCB       = 700
+tau_32_C2OFFCB       = 2000
+tau_A3_C2OFFCB       = 10000
+g_C2OFFCB            = 0.005
+
+
+// RB -> AIIAC
+
+act_RBC2AC          = 0.0
+p1_RBC2AC           = 0.015
+p2_RBC2AC           = 0.58
+w_RBC2AC            = 0.0
+v_th_RBC2AC         = -40
+v_slp_RBC2AC        = 5
+alpha_RBC2AC        = 1
+beta_RBC2AC         = 1.1
+tau_1A_RBC2AC       = 12
+tau_21_RBC2AC       = 700
+tau_32_RBC2AC       = 2000
+tau_A3_RBC2AC       = 10000
+g_RBC2AC            = 0.0012
+// normal:0.0012, pathological;0.0 
+
+//OFFCB -> AIIAC
+act_OFFCB2AC        = 0.0
+p1_OFFCB2AC         = 0.015
+p2_OFFCB2AC         = 0.58
+w_OFFCB2AC          = 0.0
+v_th_OFFCB2AC       = -40
+v_slp_OFFCB2AC      = 10
+alpha_OFFCB2AC      = 1
+//0.25
+beta_OFFCB2AC       = 1.1
+tau_1A_OFFCB2AC       = 2
+tau_21_OFFCB2AC       = 700
+tau_32_OFFCB2AC       = 2000
+tau_A3_OFFCB2AC      = 10000
+
+g_OFFCB2AC          = 0.001   
+// normal:0.001, pathological:0.0
+
+// ONCB -> ONGC
+act_ONCB2ONGC       = 0.0
+p1_ONCB2ONGC        = 0.015
+p2_ONCB2ONGC        = 0.58
+w_ONCB2ONGC         = 0.0
+v_th_ONCB2ONGC      = -20
+v_slp_ONCB2ONGC     = 5
+alpha_ONCB2ONGC     = 1
+beta_ONCB2ONGC      = 1.1
+tau_1A_ONCB2ONGC       = 2
+tau_21_ONCB2ONGC      = 700
+tau_32_ONCB2ONGC      = 2000
+tau_A3_ONCB2ONGC      = 10000
+g_ONCB2ONGC         = 0.01 * 55
+// normal:0.013, pathological:0.011
+//IMB1(ONCB)→ON mGC 55 ribbons
+
+
+// OFFCB -> OFFGC
+act_OFFCB2OFFGC     = 0.0
+p1_OFFCB2OFFGC      = 0.015
+p2_OFFCB2OFFGC      = 0.58
+w_OFFCB2OFFGC       = 0.0
+v_th_OFFCB2OFFGC    = -40
+//McLaughlin et al. (2021)
+//CaV3.1 subunit was absent from FMB
+v_slp_OFFCB2OFFGC   =6
+alpha_OFFCB2OFFGC   = 1
+beta_OFFCB2OFFGC    = 1.1
+tau_1A_OFFCB2OFFGC       = 2
+tau_21_OFFCB2OFFGC      = 700
+tau_32_OFFCB2OFFGCC      = 2000
+tau_A3_OFFCB2OFFGC     = 10000
+
+g_OFFCB2OFFGC       = 0.005 *81 
+//FMB1(OFFCB)→OFF mGC 81 ribbons
+
+//--------------------------------------
+// Glycinergic Synapses (Inhibitory)
+//--------------------------------------
+
+// AIIAC -> OFFCB
+v_th_AC2OFFCB       = -30
+v_slp_AC2OFFCB      = 10
+tau_e_AC2OFFCB      = 25
+//25   //normal:25
+tau_r_AC2OFFCB      = 800
+u_AC2OFFCB          = 0.2
+eff_AC2OFFCB        = 0
+rec_AC2OFFCB        = 1
+g_AC2OFFCB          = 0.003
+//g_AC2OFFCB          = 0.0001 * 15.7 / 5   // original
+// g_AC_OFFCB      = 0.001      // pathological
+//g_AC2OFFCB          = 0.0001     // original
+
+
+// AIIAC -> OFFGC
+//e_AC2OFFGC          = -65
+v_th_AC2OFFGC       = -30
+v_slp_AC2OFFGC      = 10
+tau_e_AC2OFFGC      = 25
+tau_r_AC2OFFGC      = 800
+u_AC2OFFGC          = 0.2 
+
+g_AC2OFFGC          = 0.003

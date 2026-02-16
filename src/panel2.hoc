@@ -1,0 +1,23 @@
+objref menubox2
+
+proc make_panel() {
+    menubox2 = new VBox()
+    menubox2.intercept(1)
+    xpanel("set parameters")
+    xvalue("noise_mean_AC","noise_mean_AC",1,"noise_set()")
+    xvalue("noise_std_AC","noise_std_AC",1,"noise_set()")
+    
+    xvalue("noise_mean_ONCBC","noise_mean_ONCBC",1,"noise_set()")
+    xvalue("noise_std_ONCBC","noise_std_ONCBC",1,"noise_set()")
+    xvalue("noise_mean_OFFCBC","noise_mean_OFFCBC",1,"noise_set()")
+    xvalue("noise_std_OFFCBC","noise_std_OFFCBC",1,"noise_set()")
+    xvalue("noise_mean_ONGC","noise_mean_ONGC",1,"noise_set()")
+    xvalue("noise_std_ONGC","noise_std_ONGC",1,"noise_set()")
+    xvalue("noise_mean_OFFGC","noise_mean_OFFGC",1,"noise_set()")
+    xvalue("noise_std_OFFGC","noise_std_OFFGC",1,"noise_set()")
+    xpanel()
+    menubox2.intercept(0)
+    menubox2.map()
+}
+
+make_panel()

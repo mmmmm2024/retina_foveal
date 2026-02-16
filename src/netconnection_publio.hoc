@@ -1,0 +1,323 @@
+// 定数宣言
+objref Gap_R[Num_R][Num_R]  // R細胞間の電気結合
+objref Gap_AC[Num_AC][Num_AC]  // AIIAC <-> AIIACの電気結合
+objref Gap_CR[Num_C][Num_R]  // 錐体細胞と桿体細胞の電気シナプス用
+objref Gap_AC_CB[Num_AC][Num_CBC]  // AII細胞とCB細胞の電気シナプス用
+
+
+objref Rod2RB[Num_R][Num_RBC]  // Rod -> RB接続用
+objref Cone2CB[Num_C][Num_CBC]  // Cone -> CB接続用
+objref RB2AC[Num_RBC][Num_AC]   // RB -> AII接続用
+objref CB2GC[Num_GC]        // CB -> GC接続用
+
+objref rng
+rng = new Random()
+rng.Random123(0, 0, 0)  // 必要に応じてシードを設定
+
+objref connected_matrix
+
+//===================//
+//   Gap junction    //
+//-------------------//
+//  Rod <-> Rod      //
+//  Cone <-> Rod      //
+//  AIIAC <-> AIIAC  //
+//  AIIAC <-> CB     //
+//===================//
+
+// 桿体細胞間の電気結合を設定する関数
+proc R_GJ() { local kr
+    print "Gap Junctions: Configuring R <-> R (30x50 Grid)"
+    //cell_index = 0
+    neighbor_index = 0
+    //neighbor_row = 0
+    //neighbor_col = 0
+    total_neighbors = 4  // 上下左右の隣接セル数
+
+    for cell_index = 0, Num_R - 1 {
+        row = int(cell_index / 50)  // 現在のセルの行位置（0～29）
+        col = cell_index % 50       // 現在のセルの列位置（0～49）
+
+        connected_count = 0  // 現在のセルの接続数カウント
+
+        // 隣接する4つのセルにランダムに接続を試みる
+        for d_row = -1, 1 {
+            for d_col = -1, 1 {
+                if (abs(d_row) + abs(d_col) != 1) { continue }  // 上下左右のみを対象とする
+
+                // 隣接セルの位置を計算
+                neighbor_row = row + d_row
+                neighbor_col = col + d_col
+
+                // 隣接セルがグリッド範囲内にある場合
+                if (neighbor_row >= 0 && neighbor_row < 30 && neighbor_col >= 0 && neighbor_col < 50) {
+                    neighbor_index = neighbor_row * 50 + neighbor_col
+
+                    // `kr`に基づいてランダムに結合するか判定
+                    if (connected_count < kr &&  rng.uniform(0,1) < kr / total_neighbors) {
+                        Gap_R[cell_index][neighbor_index] = new Gap(0.5)
+                        Rods[cell_index].soma Gap_R[cell_index][neighbor_index].loc(0.5)
+                        setpointer Gap_R[cell_index][neighbor_index].vgap, Rods[neighbor_index].soma.v(0.5)
+                        connected_count += 1
+                    }
+                }
+            }
+        }
+    }
+}
+
+// 桿体細胞間の電気結合の伝導率を設定する関数
+proc R_GJ_set() {
+    for i = 0, Num_R - 1 {
+        for j = 0, Num_R - 1 {
+            if (object_id(Gap_R[i][j]) != 0) {  // Gapオブジェクトが存在する場合のみ設定
+                Gap_R[i][j].g = gj_R_R  // 電気結合の伝導率を設定
+            }
+        }
+    }
+}
+
+
+
+// AII細胞間の電気結合をランダムに設定する関数
+proc AC_GJ() { local ka
+    print "Gap Junctions: Configuring AIIAC <-> AIIAC (3x3 Grid)"
+
+    total_neighbors = 4  // 上下左右の隣接セル数
+
+    for cell_index = 0, Num_AC - 1 {
+        row = int(cell_index / 3)  // 現在のセルの行位置（0, 1, 2）
+        col = cell_index % 3       // 現在のセルの列位置（0, 1, 2）
+
+        connected_count = 0  // 現在のセルの接続数カウント
+
+        // 隣接する4つのセルにランダムに接続を試みる
+        for d_row = -1, 1 {
+            for d_col = -1, 1 {
+                if (abs(d_row) + abs(d_col) != 1) { continue }  // 上下左右のみを対象とする
+
+                // 隣接セルの位置を計算
+                neighbor_row = row + d_row
+                neighbor_col = col + d_col
+
+                // 隣接セルがグリッド範囲内にある場合
+                if (neighbor_row >= 0 && neighbor_row < 3 && neighbor_col >= 0 && neighbor_col < 3) {
+                    neighbor_index = neighbor_row * 3 + neighbor_col
+
+                    // `ka`に基づいてランダムに結合するか判定
+                    if (connected_count < ka && rng.uniform(0,1) < ka / total_neighbors) {
+                        Gap_AC[cell_index][neighbor_index] = new Gap(0.5)
+                        AIIAC[cell_index].soma Gap_AC[cell_index][neighbor_index].loc(0.5)
+                        setpointer Gap_AC[cell_index][neighbor_index].vgap, AIIAC[neighbor_index].soma.v(0.5)
+                        connected_count += 1
+                    }
+                }
+            }
+        }
+    }
+}
+
+// AII細胞間の電気結合の伝導率を設定する関数
+proc AC_GJ_set() {
+    for i = 0, Num_AC - 1 {
+        for j = 0, Num_AC - 1 {
+            if (object_id(Gap_AC[i][j]) != 0) {  // Gapオブジェクトが存在する場合のみ設定
+                Gap_AC[i][j].g = gj_AC_AC  // 電気結合の伝導率を設定
+            }
+        }
+    }
+}
+
+
+// 錐体細胞と桿体細胞間の電気シナプス（ギャップ結合）をランダムに設定する関数
+proc R_C_GJ() { local kcr //kcr=kr
+    print "Gap Junctions: Configuring Cones <-> Rods (Randomized Connection)"    
+
+    for cone_index = 0, Num_C - 1 {
+        connected_count = 0  // 現在の錐体細胞の接続数カウント
+
+        // `kcr`に基づき、ランダムに`rod`とのギャップ結合を設定
+        while (connected_count < kcr) {
+            rand_index = int(rng.uniform(0, Num_R))  // ランダムに選ばれた`rod`のインデックス
+
+            // 結合が存在しない場合のみ新たに結合を設定
+            if (Gap_CR[cone_index][rand_index] == NULL) {
+                Gap_CR[cone_index][rand_index] = new Gap(0.5)
+                Cones[cone_index].soma Gap_CR[cone_index][rand_index].loc(0.5)
+                setpointer Gap_CR[cone_index][rand_index].vgap, Rods[rand_index].soma.v(0.5)
+                connected_count += 1
+            }
+        }
+    }
+}
+
+// 錐体細胞と桿体細胞間の電気シナプスの伝導率を設定する関数
+proc R_C_GJ_set() {
+    for i = 0, Num_C - 1 {
+        for j = 0, Num_R - 1 {
+            if (object_id(Gap_CR[i][j]) != 0) {  // Gapオブジェクトが存在する場合のみ設定
+                Gap_CR[i][j].g = gj_R_C  // 錐体-桿体結合の伝導率を設定
+            }
+        }
+    }
+}
+
+
+// AII細胞とCB細胞間の電気シナプス（ギャップ結合）をランダムに設定する関数
+proc ACCB_GJ() {
+    print "Gap Junctions: Configuring AII <-> CB (Randomized Connection)"
+
+    nc_ac_cb = 2  // 各AII細胞がランダムに選ばれた2つのCB細胞と接続
+
+    for ac_index = 0, Num_AC - 1 {
+        
+        rand1_index = 0
+        rand2_index = 0
+        // まず、異なるインデックスを持つ2つのランダムな `CB` 細胞を選択
+        rand1_index = int(rng.uniform(0, Num_CBC))
+        rand2_index = int(rng.uniform(0, Num_CBC))
+        // print rand1_index, rand2_index 
+        // 二つのインデックスが異なるまで再度ランダムに選択
+        while (rand2_index == rand1_index) {
+            rand2_index = int(rng.uniform(0, Num_CBC))
+        }
+
+        // `rand1_index` に基づき、最初のギャップ結合を設定
+        Gap_AC_CB[ac_index][rand1_index] = new Gap(0.5)
+        AIIAC[ac_index].soma Gap_AC_CB[ac_index][rand1_index].loc(0.5)
+        setpointer Gap_AC_CB[ac_index][rand1_index].vgap, C_BC[rand1_index].soma.v(0.5)
+
+        // `rand2_index` に基づき、2つ目のギャップ結合を設定
+        Gap_AC_CB[ac_index][rand2_index] = new Gap(0.5)
+        AIIAC[ac_index].soma Gap_AC_CB[ac_index][rand2_index].loc(0.5)
+        setpointer Gap_AC_CB[ac_index][rand2_index].vgap, C_BC[rand2_index].soma.v(0.5)
+
+        // print "AII cell ", ac_index, " connected to CB cells ", rand1_index, " and ", rand2_index
+    }
+}
+
+// AII細胞とCB細胞間の電気シナプスの伝導率を設定する関数
+proc ACCB_GJ_set() {
+    for i = 0, Num_AC - 1 {
+        for j = 0, Num_CBC - 1 {
+            if (object_id(Gap_AC_CB[i][j]) != 0) {  // Gapオブジェクトが存在する場合のみ設定
+                Gap_AC_CB[i][j].g = gj_AC_CB  // AII-CB結合の伝導率を設定
+            }
+        }
+    }
+}
+
+//============================//
+//    Glutamate synapses(Ex)  //
+//----------------------------//
+//	  Rod -> RB 		      //
+//    Cone -> CB           　 //
+//    RB -> AIIAC　　         //
+//    CB -> GC　　　　         //
+//============================//
+
+
+proc Ribbon_syn () {
+
+    // (1) R層の各rodがRB層のランダムに選ばれた2つの細胞と接続
+    print "EX : Rod -> RB"
+    for r = 0, Num_R - 1 {
+        rb_connected = 0  // 初期化:接続数を0に設定
+
+        while (rb_connected < 2) {  // ランダムに選ばれた2つのRBと接続
+            rand_index = int(rng.uniform(0,Num_RBC))
+            if (object_id(Rod2RB[r][rand_index]) == 0) {  // 接続が存在しない場合
+                Rod2RB[r][rand_index] = new ribbon_syn()
+                R_BC[rand_index].soma Rod2RB[r][rand_index].loc(1)
+                setpointer Rod2RB[r][rand_index].v_pre, Rods[r].soma.v(1)
+
+                Rod2RB[r][rand_index].act = 0.0
+                Rod2RB[r][rand_index].p1 = 0.015
+                Rod2RB[r][rand_index].p2 = 0.58
+                rb_connected += 1
+            }
+        }
+    }
+
+    // (2) C層の各coneがCB層のランダムに選ばれた1つの細胞と接続
+    print "EX : Cone -> CB"
+    for c = 0, Num_C - 1 {
+        rand_index = int(rng.uniform(0,Num_CBC))
+        Cone2CB[c][rand_index] = new ribbon_syn()
+        C_BC[rand_index].soma Cone2CB[c][rand_index].loc(1)
+        setpointer Cone2CB[c][rand_index].v_pre, Cones[c].soma.v(1)
+
+        Cone2CB[c][rand_index].act = 0.0
+        Cone2CB[c][rand_index].p1 = 0.015
+        Cone2CB[c][rand_index].p2 = 0.58
+    }
+
+    // (3) RB層の各rod bipolar cellがAII層のランダムに選ばれた3つの細胞と接続
+    print "EX : RB -> AIIAC"
+    for rb = 0, Num_RBC - 1 {
+        ac_connected = 0  // 初期化：接続数を0に設定
+
+        while (ac_connected < 3) {  // ランダムに選ばれた3つのAIIと接続
+            rand_index = int(rng.uniform(0,Num_AC))
+            if (object_id(RB2AC[rb][rand_index]) == 0) {  // 接続が存在しない場合
+                RB2AC[rb][rand_index] = new ribbon_syn()
+                AIIAC[rand_index].soma RB2AC[rb][rand_index].loc(1)
+                setpointer RB2AC[rb][rand_index].v_pre, R_BC[rb].soma.v(1)
+
+                RB2AC[rb][rand_index].act = 0.0
+                RB2AC[rb][rand_index].p1 = 0.015
+                RB2AC[rb][rand_index].p2 = 0.58
+                ac_connected += 1
+            }
+        }
+    }
+
+    // (4) 4つのcone bipolar cellsすべてがganglion cellと接続
+    print "EX : CB -> GC"
+    for gc = 0, Num_GC - 1 {
+        CB2GC[gc] = new ribbon_syn()
+        GANGLION[gc].soma CB2GC[gc].loc(1)
+        setpointer CB2GC[gc].v_pre, C_BC[gc].soma.v(1)
+
+        CB2GC[gc].act = 0.0
+        CB2GC[gc].p1 = 0.015
+        CB2GC[gc].p2 = 0.58
+    }
+}
+
+// 各シナプスの最大伝導率を設定するプロシージャ
+proc Ribbon_syn_set() {//local g_RB_AII, g_ONCB_ONGC, g_OFFCB_OFFGC
+    // R -> RB
+    for r = 0, Num_R - 1 {
+        for rb = 0, Num_RBC - 1 {
+            if (object_id(Rod2RB[r][rb]) != 0) {
+                Rod2RB[r][rb].g_max = g_max
+            }
+        }
+    }
+
+    // C -> CB
+    for c = 0, Num_C - 1 {
+        for cb = 0, Num_CBC - 1 {
+            if (object_id(Cone2CB[c][cb]) != 0) {
+                Cone2CB[c][cb].g_max = g_max
+            }
+        }
+    }
+
+    // RB -> AII
+    for rb = 0, Num_RBC - 1 {
+        for ac = 0, Num_AC - 1 {
+            if (object_id(RB2AC[rb][ac]) != 0) {
+                RB2AC[rb][ac].g_max = g_max
+            }
+        }
+    }
+
+    // CB -> GC
+    for gc = 0, Num_GC - 1 {
+        if (object_id(CB2GC[gc]) != 0) {
+            CB2GC[gc].g_max = g_max
+        }
+    }
+}

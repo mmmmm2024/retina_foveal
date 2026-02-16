@@ -1,0 +1,52 @@
+//------------ load src files -----------------
+print "=========== init.hoc =============\n"
+load_file("/Applications/NEURON/share/nrn/lib/hoc/nrngui.hoc")
+load_file("src/parameters_tada.hoc")
+load_file("createcells_tada.hoc")
+load_file("src/netconnection_tada.hoc")
+load_file("src/panel.hoc")
+load_file("src/panel2.hoc")
+load_file("src/write.hoc")
+
+//------------ Simulation Control -----------------
+
+proc step() {
+   if (ENABLE_GRAPHICAL_INTERFACE) Plot()
+   fadvance()
+}
+
+proc init() {
+   finitialize()
+   fcurrent()
+   dt=step_dt
+   tstop	= tstop
+}
+
+proc start() {
+   count=0
+   iclamps()        // defined at createcells.hoc
+   noise()          // defined at createcells.hoc
+   noise_set()      // defined at createcells.hoc
+   Ribbon_syn()     // defined at netconnection.hoc
+   Ribbon_syn_set() // defined at netconnection.hoc
+   Gly_syn()        // defined at netconnection.hoc
+   Gly_syn_set()    // defined at netconnection.hoc
+   AC_GJ()          // defined at netconnection.hoc
+   AC_GJ_set()      // defined at netconnection.hoc
+   OFFGC_GJ()       // defined at netconnection.hoc
+   OFFGC_GJ_set()   // defined at netconnection.hoc   
+   ACBC_GJ()        // defined at netconnection.hoc
+   ACBC_GJ_set()    // defined at netconnection.hoc
+   ONCB_GJ()        // defined at netconnection.hoc
+   ONCB_GJ_set()    // defined at netconnection.hoc
+   OFFCB_GJ()       // defined at netconnection.hoc
+   OFFCB_GJ_set()   // defined at netconnection.hoc
+} // end proc start
+
+init()
+start()
+// write_file()
+make_panel()
+
+//load_file("init.ses")
+load_file("src/init2.ses")

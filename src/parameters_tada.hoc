@@ -1,0 +1,161 @@
+//====================//
+// parameter setting  //
+//====================//
+
+//======================//
+// simulation parameter //
+//======================//
+
+ENABLE_GRAPHICAL_INTERFACE = 1
+tstop	    = 4000		// (ms)  total simulation time
+step_dt   = 0.025		// (ms)  simulation     step original = 0.005
+//number_steps = steps_per_ms*tstop
+
+
+//=========================================//
+//             cell parameter              //
+//-----------------------------------------//
+//                cell type                //
+//                AIIAC                    //
+//                Rod Bipolar              //
+//                ON Cone Bipolar          //
+//                OFF Cone Bipolar         //
+//                ON Ganglion              //
+//                OFF Ganglion             //
+//=========================================//
+
+//=================//
+// AIIAC parameter //
+//=================//
+Num_AC = 14
+//14
+noise_mean_AC = 0.0
+noise_std_AC = 0.002
+
+//=======================//
+// Rod bipolar parameter //
+//=======================//
+Num_RBC = 20
+     //173(paper), or 20
+noise_mean_RBC = 0.0
+noise_std_RBC = 0.0004
+
+//===================//
+// ON Cone parameter //
+//===================//
+//Num_ONCBC = 55
+Num_ONCBC = 28
+  //28(paper)
+noise_mean_ONCBC = 0.0
+noise_std_ONCBC = 0.0004
+
+//====================//
+// OFF Cone parameter //
+//====================//
+Num_OFFCBC = 64
+//64
+noise_mean_OFFCBC = 0.0
+noise_std_OFFCBC = 0.0004
+
+
+//=================//
+// ON GC parameter //
+//=================//
+Num_ONGC = 1
+noise_mean_ONGC = 0.003     //0.005
+noise_std_ONGC = 0.0004      //0.002
+
+//==================//
+// OFF GC parameter //
+//==================//
+Num_OFFGC = 1
+//5
+noise_mean_OFFGC = 0.003
+noise_std_OFFGC = 0.005     //0.005
+
+
+//===========================================//
+//              connection parameter         //
+//-------------------------------------------//
+//              Gap junction                 //
+//              AIIAC <-> ONCB               //
+//              AIIAC <-> AIIAC              //
+//              OFFGC <-> OFFGC              //
+//-------------------------------------------//
+//              Glu syn (Ex)                 //
+//              Rod -> AIIAC                 //
+//              ONCB -> ONGC                 //
+//              OFFCB -> OFFGC               //
+//              OFFCB -> AIIAC               //
+//-------------------------------------------//
+//              Gly syn (Inh)                //
+//              AIIAC -> OFFGC               //
+//              AIIAC -> OFFCB               //
+//===========================================//
+
+
+//=================//
+// Gap junction    //
+//=================//
+
+// AIIAC <-> ONCB 
+gj_AC_ONCB = 0.00050    //original
+//gj_AC_ONCB = 0.00003 //[uS] //albino rat(normal)
+
+// AIIAC <-> AIIAC
+gj_AC_AC = 0.00008 //[uS]
+
+// OFFGC <-> OFFGC
+gj_OFFGC_OFFGC = 0.001 //[uS]
+
+// ONCB <-> ONCB
+gj_ONCB_ONCB = 0.001 //[uS]
+
+// OFFCB <-> OFFCB
+gj_OFFCB_OFFCB = 0.001 //[uS]
+
+//==============//
+// Glu syn(Ex)  //
+//==============//
+
+// Rod -> AIIAC
+g_RB_AII = 0.0012       //normal
+// g_RB_AII = 0.0000    //pathological
+
+// ONCB -> ONGC
+g_ONCB_ONGC = 0.013     //normal
+// g_ONCB_ONGC = 0.011  //pathological
+
+
+// OFFCB -> OFFGC
+g_OFFCB_OFFGC = 0.013   //normal
+// g_OFFCB_OFFGC = 0.0  //pathological
+
+// OFFCB -> AIIAC
+g_OFFCB_AII = 0.0001    //normal
+// g_OFFCB_AII = 0.000  //pathological
+
+
+//===============//
+// Gly syn(Inh)  //
+//===============//
+
+
+// AIIAC -> OFFGC
+g_AC_OFFGC = 0.003  //normal
+
+e_AC_OFFGC = -65
+v_th_AC_OFFGC = -30
+v_slp_AC_OFFGC = 10
+tau_e_AC_OFFGC = 25
+tau_r_AC_OFFGC = 800
+u_AC_OFFGC = 0.2
+
+// AIIAC -> OFFCB
+g_AC_OFFCB = 0.0001     //original
+//g_AC_OFFCB = 0.001    //pathological model
+v_th_AC_OFFCB = -30
+v_slp_AC_OFFCB = 10
+tau_e_AC_OFFCB = 25
+tau_r_AC_OFFCB = 800
+u_AC_OFFCB = 0.2

@@ -1,0 +1,32 @@
+begintemplate AC
+
+public soma, vc, ic
+create soma
+objref vc, ic
+
+proc init() {
+    create soma
+    soma {
+        // 細胞の形状とパッシブ特性の設定
+        L = 7
+        diam = 7
+        cm = 20       // 膜容量 (pF)
+        Ra = 150
+        insert pas
+        e_pas = -69  // 静止膜電位 (mV)
+        g_pas = 0.00005  // パッシブコンダクタンス (20 pS の Cm に相当)
+
+        // イオンチャネルの設定
+
+        // INa チャネル
+        insert spike2
+        gNabar_Na = 0.00004  // gNa = 4 nS
+        ena = 40  // INaの逆転電位 (mV)
+
+        insert Ik  //K-type
+        gIkbar_Ik= 0.000004 //0.4 ns
+        ek=-80
+    }
+}
+
+endtemplate AC

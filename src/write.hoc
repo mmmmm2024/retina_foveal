@@ -1,0 +1,31 @@
+objref fp_AC
+
+proc write_file (){
+    print "============== write ============\n"
+    dt = 0.025
+    tstop = 6000
+    /*---------------------------------
+                Open Files
+    ----------------------------------*/
+        wopen("OFFGC_g_2_half_-20.txt")
+    /*---------------------------------
+                Write in File
+    ---------------------------------*/
+
+    while(t<tstop){
+        //各細胞の膜電位
+        // fprint("%f %f\n", t, R_BC[0].soma.v( 0.5 ))
+        // fprint("%f %f\n", t, ON_CBC[0].soma.v( 0.5 ))
+        // fprint("%f %f\n", t, OFF_CBC[0].soma.v( 0.5 ))
+        // fprint("%f %f\n", t, AIIAC[0].soma.v( 0.5 ))
+        // fprint("%f %f\n", t, ON_GC[0].soma.v( 0.5 ))
+        // fprint("%f %f\n", t, OFF_GC[0].soma.v( 0.5 ))
+        // fprint("%f %f\n", t, IinjLT_rod)
+
+        fadvance()  //tをカウント
+    }
+    /*---------------------------------
+                Close Files
+    ---------------------------------*/
+        wopen()
+}//end proc

@@ -1,0 +1,54 @@
+begintemplate RBC
+
+public soma, vc, ic
+create soma
+objref vc, ic
+  
+proc init() {
+    create soma
+
+    soma {
+        //figure
+
+        //L = 18
+        L = 15
+        //diam = 14
+	diam = 10
+	cm = 1
+        nseg = 1
+
+        //channel
+
+        insert pas
+        //e_pas = -41
+        //e_pas = -39 changed
+        e_pas = -58
+        g_pas = 0.000233
+
+        insert ihbip
+
+        insert cadbip
+        depth_cad = 0.025  
+        taur_cad = 0.8
+
+        insert cabip
+
+	insert kcabip
+
+        insert IAbip
+
+        insert IKvbip
+	ek = -58
+
+        //ek_IKv = -58
+        
+        //Voltage clamp
+        ////vc = new VClamp(0.5)
+        //vc.dur[0]=10
+        //vc.amp[0]=-37.9
+        //vc.amp[0]=-39.0
+	////ic = new IClamp(0.5)
+    }
+}	// end init()
+
+endtemplate RBC

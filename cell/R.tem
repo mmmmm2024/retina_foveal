@@ -1,0 +1,83 @@
+begintemplate Rod
+
+public soma, ic
+create soma
+objref ic
+objref vc
+
+proc init() { 
+    create soma
+
+    soma {
+        // 細胞の形状とパッシブ特性の設定
+        L = 8/PI //(um) 20(origin)
+        diam = 8 //(um) 20(origin) 
+        //cm = 20       // 膜容量 (pF) 10(origin)
+        nseg = 1
+        //Ra = 150
+        //v = -60
+        //e = -30 
+
+        //ic = new RPRInput(0.5)
+        // Initialize voltage clamp (SEClamp)
+        //vc = new RPRInput(0.5) 
+        
+
+        //insert pas
+        //e_pas = -30  // 静止膜電位 (mV)
+        //g_pas = 0.00052  // パッシブコンダクタンス
+    
+        // イオンチャネルの設定
+        
+        //leakチャネル
+        insert ILeakyone
+
+        // ICa チャネル
+        insert ICayone
+
+        // IKx チャネル
+        insert IKxyone
+        ///gKxbar = 0.85e-9
+        ///ek = -80  // カリウム逆転電位 (mV)
+
+        // IKv チャネル
+        insert IKvyone
+        ///gKvbar = 10e-9  // gKv = 10 nS
+        ///ek = -80
+
+        
+        // Ca Dynamic
+        insert CaDynamicsyone
+        //insert cad
+
+        // IKCa チャネル
+        insert IKCayone         
+
+        // ICl(Ca) チャネル
+        insert IClyone
+        ///gCl_Ca = 1.3e-9  // gCl(Ca) = 1.3 nS
+        ///ecl = -20  // クロライド逆転電位 (mV)
+
+        // Ih チャネル
+        insert IHyone
+
+ 	vc = new VClamp(0.5)
+    vc.dur[0]=100
+    vc.amp[0]=-42.9
+
+    }
+
+    //soma ic = new RPRInput(0.5)
+    //ic.amp = 100
+    //ic.onset = 2000
+
+}
+
+//proc set_vclamp() { local amp1, dur1, rs
+//  
+//    vc.amp1 = $1  
+//    vc.dur1 = $2  //clamp duration
+//    vc.rs = rs      //resistance
+//}
+
+endtemplate Rod

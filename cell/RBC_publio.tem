@@ -1,0 +1,48 @@
+begintemplate RBC
+
+public soma, vc, ic
+create soma
+objref vc, ic
+  
+proc init() {
+    create soma
+
+    soma {
+        // パッシブパラメータ
+        L = 8         // 長さ（μm）
+        diam = 8      // 直径（μm）
+        cm = 10       // 膜容量 (pF)
+        nseg = 1      // セグメント数
+
+        // 受動チャネル
+        insert pas
+        e_pas = -38   // 受動反転電位 (mV)
+        g_pas = 0.000071 // 受動コンダクタンス
+
+        // 電位依存性カリウム電流 (IKv)
+        insert IKv
+        //gbar_kv = 2    // 最大コンダクタンス (nS)
+        ek = -58       // 反転電位 (mV)
+
+        // カルシウム依存性カリウム電流 (IKCa)
+        insert kca
+        gbar_kca = 8.5 // 最大コンダクタンス (nS)
+        ek = -58       // 反転電位 (mV)
+
+        // カルシウム電流 (ICa)
+        insert ca
+        gbar_ca = 1.1  // 最大コンダクタンス (nS)
+
+        // カルシウム濃度機構
+        insert cad
+        depth_cad = 0.025  // カルシウムシェルの深さ (μm)
+        taur_cad = 0.8     // カルシウム除去タイム定数 (ms)
+
+        // h電流 (Ih)
+        insert ih
+        gbar_ih = 2   // 最大コンダクタンス (nS)
+        eh = -75      // 反転電位 (mV)
+    }
+}	// end init()
+
+endtemplate RBC

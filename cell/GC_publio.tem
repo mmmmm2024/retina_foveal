@@ -1,0 +1,47 @@
+begintemplate GC
+
+public soma, vc, ic
+create soma
+objref vc, ic
+
+proc init() {
+    create soma
+    soma {
+        // 細胞の形状とパッシブ特性の設定
+        L = 25
+        diam = 25
+        cm = 20       // 膜容量 (pF)
+        Ra = 150
+        insert pas
+        e_pas = -65  // 静止膜電位 (mV)
+        g_pas = 0.00005  // パッシブコンダクタンス (20 pS の Cm に相当)
+
+        // イオンチャネルの設定
+
+        // IKv チャネル
+        insert IKv
+        gKvbar_Kv = 0.00012  // gKv = 12 nS
+        ek = -75  // カリウム逆転電位 (mV)
+
+        // IKCa チャネル
+        insert kca
+        gK_Cabar_K_Ca = 0.00036  // gKCa = 36 nS
+        ek = -75
+
+        // ICa チャネル
+        insert ca
+        gCabar_Ca = 0.00022  // gCa = 2.2 nS
+
+        // IA チャネル
+        insert A
+        gAbar_A = 0.000036  // gA = 36nS
+        ea = -75  // IAの逆転電位 (mV)
+
+        // INa チャネル
+        insert spike2
+        gNabar_Na = 0.0005  // gNa = 50 nS
+        ena = 35  // INaの逆転電位 (mV)
+    }
+}
+
+endtemplate GC
