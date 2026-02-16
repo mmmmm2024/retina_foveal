@@ -1,0 +1,325 @@
+//================================================================
+//                  Load cells templates		             
+//================================================================
+load_file("cell/Rod.tem")     // Rods cell template
+load_file("cell/Cone.tem")     // Cones cell template
+load_file("cell/RBC.tem")    // Bipolar cell template (for RB and CB)
+load_file("cell/ONCB.tem")    // Bipolar cell template (for RB and CB)
+load_file("cell/OFFCB.tem")
+load_file("cell/AC.tem")    // Amacrine cell template
+load_file("cell/GC.tem")    // Ganglion cell template
+
+//================================================================
+//                 Define the number of each cell                
+//================================================================
+
+NR_SAFE = Num_R        // Num_R = 0
+if (NR_SAFE < 1) { NR_SAFE = 1 }
+
+NC_SAFE = Num_C        // Num_C = 0
+if (NC_SAFE < 1) { NC_SAFE = 1 }
+
+objref Rods[NR_SAFE]          // Rods cells
+objref Cones[NC_SAFE]         // Cone cells
+objref R_BC[Num_RBC]       // Rods Bipolar cells (from RBC template)
+objref ON_CBC[Num_ONCBC]		//ON Cone Bipolar
+objref OFF_CBC[Num_OFFCBC]		//OFF Cone Bipolar
+objref AIIAC[Num_AC]       // Amacrine cells
+objref ON_GC[Num_ONGC]			//ON Ganglion
+objref OFF_GC[Num_OFFGC]		//OFF Ganglion
+
+// Input
+objref input_Rods[NR_SAFE]         // Input to Rods cells
+objref input_Dim[NR_SAFE]  
+objref input_Cones[NC_SAFE]         // Input to Cones cells
+objref input_RB[Num_RBC]      // Input to Rods Bipolar cells
+//objref input_CB[Num_CBC]      // Input to Cones Bipolar cells
+objref input_ON_CBC[Num_ONCBC]	//Input to ON Cone Bipolar
+objref input_OFF_CBC[Num_OFFCBC]//Input to OFF Cone Bipolar
+objref input_AIIAC[Num_AC]    // Input to Amacrine cells
+//objref input_GANGLION[Num_GC]       // Input to Ganglion cells
+objref ON_GC[Num_ONGC]			//ON Ganglion
+objref OFF_GC[Num_OFFGC]		//OFF Ganglion
+
+
+// Noise
+objref noise_Rods[NR_SAFE]         // Noise to Rods cells
+objref noise_Cones[NC_SAFE]         // Noise to Cones cells
+objref noise_RB[Num_RBC]      // Noise to Rods Bipolar cells
+objref noise_ON_CBC[Num_ONCBC]	//Noise to ON Cone Bipolar
+objref noise_OFF_CBC[Num_OFFCBC]//Noise to OFF Cone Bipolar
+objref noise_ON_GC[Num_ONGC]	//Noise to ON Ganglion
+objref noise_OFF_GC[Num_OFFGC]	//Noise to ON Ganglion
+objref noise_AIIAC[Num_AC]    // Noise to Amacrine cells
+//objref noise_GC[Num_GC]       // Noise to Ganglion cells
+
+//==============//
+// Create cells //
+//==============//
+print "Creating cells..."
+
+// Create Rods cells
+for i = 0, Num_R - 1 {
+    Rods[i] = new Rod()
+    //Rods[i].soma amp = AMP 
+    //Rods[i].soma on = on
+    //Rods[0].soma.v(0.5) = -38
+    //vc.amp1 = vc.amp1 - ic / 200 * 1e-5 / 10
+}
+
+// // Create Cones cells
+for i = 0, Num_C - 1 {
+    Cones[i] = new Cone()
+    //Cones[i].soma amp = AMP 
+}
+
+// Create Rods Bipolar cells (using RBC template)
+for i = 0, Num_RBC - 1 {
+    R_BC[i] = new RBC()
+}
+
+// // Create ONCB
+for i = 0, Num_ONCBC-1{
+	ON_CBC[i] = new ONCB()
+	//leak conductanceをランダムにする
+	//ON_CBC[i].soma.g_pas = ON_CBC[i].soma.g_pas*(1 + myrand_BC.normal(0,0.1))
+}
+
+// Create OFFCB
+for i = 0, Num_OFFCBC-1{
+	OFF_CBC[i] = new OFFCB()
+	//leak conductanceをランダムにする
+	//OFF_CBC[i].soma.g_pas = OFF_CBC[i].soma.g_pas*(1 + myrand_BC.normal(0,0.1))
+}
+
+// Create Amacrine cells
+for i = 0, Num_AC - 1 {
+    AIIAC[i] = new AC()
+}
+
+// Create ONGC
+for i = 0, Num_ONGC-1{
+	ON_GC[i] = new GC()
+	//leak conductanceをランダムにする
+	//ON_GC[i].soma.g_pas = ON_GC[i].soma.g_pas*(1 + myrand_GC.normal(0,0.1))
+}
+
+// Create OFFGC
+for i = 0, Num_OFFGC-1{
+	OFF_GC[i] = new GC()
+	//leak conductanceをランダムにする
+	//OFF_GC[i].soma.g_pas = OFF_GC[i].soma.g_pas*(1 + myrand_GC.normal(0,0.1))
+}
+
+//=======================//
+//  Add Input currents	 //
+//=======================//
+proc iclamps() { local i, cur, on // 1 arg - amp
+    // Input to Rods cells
+    
+    //cur = $1
+    //on = $2
+    //InputNumber = (($1 + 10)/100) 
+    // ON応答
+    for i = 0, Num_R - 1 {
+        //input_Rods[i] = new RPRInput(0.5)
+        //input_Rods[i] = new IinjLT_offcone(0.5)
+        //Rods[i].soma input_Rods[i]
+        Rods[i].soma input_Rods[i] = new RPRInput(0.5) //new R_input(0.5)
+        //print "Rods[", i, "]: amp = ", input_Rods[i].amp, ", onset = ", input_Rods[i].onset
+        input_Rods[i].amp  = $1  //(origin) cur
+        input_Rods[i].del  = stim
+        input_Rods[i].num  = num_stim
+        input_Rods[i].ton  = ton_stim
+        input_Rods[i].toff = toff_stim
+
+        // Rods[0].set_vclamp(Rods[0].soma.v(0.5)- input_Rods[0].i / 200 * 1e-5 / 10, 10000)
+        //Rods[0].set_vclamp(Rods[0].soma.v(0.5)- input_Rods[0].i / 200/ 10, 10000)
+        //Rods[i].soma v = -38
+        // input_Rods[i].v = -38
+        //print "Rods[", i, "]: amp = ",input_Rods[i].amp, ", onset = ", input_Rods[i].onset
+        Rods[i].soma input_Dim[i] = new IinjLTDim(0.5)
+        input_Dim[i].del  = stim_Dim
+        input_Dim[i].num  = num_Dim
+        input_Dim[i].ton  = ton_Dim
+        input_Dim[i].toff = toff_Dim 
+        input_Dim[i].ssI  = ssI_Dim
+        input_Dim[i].amp  = amp_Dim
+
+    }
+
+    // Input to Cones
+    for i = 0, Num_C - 1 {
+        //input_Rods[i] = new RPRInput(0.5)
+        //input_Rods[i] = new IinjLT_offcone(0.5)
+        //Rods[i].soma input_Rods[i]
+        Cones[i].soma input_Cones[i] = new IinjLT_cone(0.5) //new R_input(0.5)
+        //print "Rods[", i, "]: amp = ", input_Rods[i].amp, ", onset = ", input_Rods[i].onset
+        input_Cones[i].amp = $1  //(origin) cur
+        input_Cones[i].del=  stim_C
+        input_Cones[i].num = num_stim2C
+        input_Cones[i].ton = ton_C
+        input_Cones[i].toff = toff_C
+        input_Cones[i].ssI = ssI_C
+    }
+
+    // //Input to Rods Bipolar cells (RBC)
+    // for i = 0, Num_RBC - 1 {
+    // //    // 正常時(光刺激ありの入力)
+    //     R_BC[i].soma input_RB[i] = new IinjLT_rod(0.5)
+    //     //input_RB[i].amp = $1 
+    //     // 病変時(入力なし)
+    //     // R_BC[i].soma input_RBC[i] = new IinjLT_(0.5)
+    //     // 病変時(陽イオン電流(グルタミン酸がないことによる))
+    //     // R_BC[i].soma input_RBC[i] = new IinjLT_cation_rb(0.5)
+    // }
+
+    // //Input to Cones Bipolar cells (CBC)
+    // for i = 0, Num_CBC - 1 {
+    //     //正常時(光刺激ありの入力)
+    //     C_BC[i].soma input_CB[i] = new IinjLT_oncone(0.5)
+    //     //病変時(入力なし)
+    //     //C_BC[i].soma input_CBC[i] = new IinjLT_(0.5)
+    //     //病変時(陽イオン電流(グルタミン酸がないことによる)
+    //     //C_BC[i].soma input_CBC[i] = new IinjLT_cation_cb(0.5)
+    // }
+    
+    // for i=0,InputNumber {
+
+    // if (ii == 1 ) { ii=0 }
+    // if ($1>=10) { //(original) if ($1>=30) {
+    // input_Rods[ii].amp = $1
+    // }else{
+    // input_Dim[ii].amp = $1
+    // }	
+    // i=i+1
+    // }
+}
+
+//=================================================================
+//                      Change Ih conductance		       	  //		
+//=================================================================
+
+// proc block_ih(){
+
+// for i = 0, Num_R - 1 {
+//       Rods[i].soma.ghbar_hpub=$1
+//     }
+// }
+
+//===========//
+// Add noise //
+//===========//
+proc noise() { local i
+    // Noise to Rods cells
+    for i = 0, Num_R - 1 {
+        Rods[i].soma noise_Rods[i] = new Ifluct1(0.5)
+    }
+
+    // Noise to Cones cells
+    for i = 0, Num_C - 1 {
+        Cones[i].soma noise_Cones[i] = new Ifluct1(0.5)
+    }
+
+    // Noise to Rods Bipolar cells (RBC)
+    for i = 0, Num_RBC - 1 {
+        R_BC[i].soma noise_RB[i] = new Ifluct1(0.5)
+    }
+
+	//Noise to ON Cone Bipolar
+    for i=0, Num_ONCBC-1{
+        ON_CBC[i].soma noise_ON_CBC[i] = new Ifluct1(.5)
+    }
+	
+	//Noise to OFF Cone Bipolar
+    for i=0, Num_OFFCBC-1{
+        OFF_CBC[i].soma noise_OFF_CBC[i] = new Ifluct1(.5)
+    }
+
+    // Noise to Amacrine cells (AIIAC)
+    for i = 0, Num_AC - 1 {
+        AIIAC[i].soma noise_AIIAC[i] = new Ifluct1(0.5)
+    }
+
+	//Noise to ON Ganglion
+    for i=0, Num_ONGC-1{
+        ON_GC[i].soma noise_ON_GC[i] = new Ifluct1(.5)
+    }
+	
+	//Noise to OFF Ganglion
+	for i=0, Num_OFFGC-1{
+        OFF_GC[i].soma noise_OFF_GC[i] = new Ifluct1(.5)
+    }
+}
+
+//=========================//
+// Noise parameter setting //
+//=========================//
+proc noise_set() { local i
+    // Noise settings for Rods cells
+    for i = 0, Num_R - 1 {
+        noise_Rods[i].m = noise_mean_R
+        noise_Rods[i].s = noise_std_R
+        noise_Rods[i].tau = tau_noise_R
+        noise_Rods[i].seed = seed_noise_R
+    }
+
+    // // Noise settings for Cones cells
+    for i = 0, Num_C - 1 {
+        noise_Cones[i].m = noise_mean_C
+        noise_Cones[i].s = noise_std_C
+        noise_Cones[i].tau = tau_noise_C
+        noise_Cones[i].seed = seed_noise_C
+    }
+
+    // Noise settings for Rods Bipolar cells
+    for i = 0, Num_RBC - 1 {
+        noise_RB[i].m = noise_mean_RBC
+        noise_RB[i].s = noise_std_RBC
+        noise_RB[i].tau = tau_noise_RBC
+        noise_RB[i].seed = seed_noise_RBC 
+    }
+
+	//ON Cone Bipolar
+    for i=0, Num_ONCBC-1{
+		noise_ON_CBC[i].m = noise_mean_ONCBC
+		noise_ON_CBC[i].s = noise_std_ONCBC
+		noise_ON_CBC[i].tau = tau_noise_ONCBC 
+		noise_ON_CBC[i].seed = seed_noise_ONCBC 
+    }
+	
+	//OFF Cone Bipolar
+    for i=0, Num_OFFCBC-1{
+		noise_OFF_CBC[i].m = noise_mean_OFFCBC
+		noise_OFF_CBC[i].s = noise_std_OFFCBC
+		noise_OFF_CBC[i].tau = tau_noise_OFFCBC
+		noise_OFF_CBC[i].seed = seed_noise_OFFCBC
+    }
+
+    // Noise settings for Amacrine cells
+    for i = 0, Num_AC - 1 {
+        noise_AIIAC[i].m = noise_mean_AC
+        noise_AIIAC[i].s = noise_std_AC
+        noise_AIIAC[i].tau = tau_noise_AC
+        noise_AIIAC[i].seed = seed_noise_AC
+    }
+
+	//ON Ganglion
+    for i=0, Num_ONGC-1{
+		noise_ON_GC[i].m = noise_mean_ONGC
+		noise_ON_GC[i].s = noise_std_ONGC
+		noise_ON_GC[i].tau = tau_noise_ONGC
+		noise_ON_GC[i].seed = seed_noise_ONGC
+    }
+
+	//OFF Ganglion
+    for i=0, Num_OFFGC-1{
+		noise_OFF_GC[i].m = noise_mean_OFFGC
+		noise_OFF_GC[i].s = noise_std_OFFGC
+		noise_OFF_GC[i].tau = tau_noise_OFFGC
+		noise_OFF_GC[i].seed = seed_noise_OFFGC
+    }
+}
+    //access Rods[0].soma
+
+print "All cells created successfully!"
