@@ -1,5 +1,5 @@
 # retina_foveal
-# 👁️ Human Retina Model (Eccentricity: 1mm & 12mm)
+# Human Retina Model (Eccentricity: 1mm)
 ### ヒト網膜数理モデル：生理学的シミュレーション・プラットフォーム
 
 ![Retina Layer Diagram](https://img.shields.io/badge/Platform-NEURON%20%7C%20Python-blue)
@@ -11,7 +11,7 @@
 
 ## 1. 概要 (Overview)
 
-本プロジェクトは、ヒト網膜の **中心窩（偏心度 1mm）** および **周辺部（偏心度 12mm）** における神経回路を再現した数理モデルです。
+本プロジェクトは、ヒト網膜の **中心窩（偏心度 1mm）** における神経回路を再現した数理モデルです。
 
 * **エンジン**: **NEURON (C/C++ベース)**。物理的なイオンチャネルや膜電位の計算を担当。
 * **コントローラー**: **Python**。実験条件の制御、並列実行、データ解析を担当。
@@ -52,7 +52,9 @@ mod/ 内を書き換えた際は、必ず再実行（再コンパイル）して
 
 最小構成でシミュレーションを実行し、環境が正常か確認します。
 
-```python init.py
+```bash
+python init.py
+```
 
 3. プロジェクト構造 (Project Structure)
 
@@ -70,9 +72,9 @@ results/	出力先。シミュレーション結果（CSV, PNG等）が保存さ
 用途に合わせて以下のスクリプトを使い分けてください。
 
 生存率スイープ
-
+```bash
 python sweep_survival.py
-
+```
 
 変性進行（細胞死）に伴う回路の変化をシミュレートします。
 
