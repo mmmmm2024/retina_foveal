@@ -1,4 +1,42 @@
 # retina_foveal
+# 👁️ Human Retina Model (Eccentricity: 1mm & 12mm)
+### ヒト網膜数理モデル：生理学的シミュレーション・プラットフォーム
+
+![Retina Layer Diagram](https://img.shields.io/badge/Platform-NEURON%20%7C%20Python-blue)
+![Language](https://img.shields.io/badge/Language-C%20%7C%20Python-orange)
+
+> **"Code is read much more often than it is written."** > 本プロジェクトは、ヒト網膜という「精密な並列信号処理回路」を数理的に再現したものです。C言語を主戦場とするエンジニアが、Pythonという制御レイヤーを通じて生物物理学的現象を解析できるように設計されています。
+
+---
+
+## 1. 概要 (Overview)
+
+本プロジェクトは、ヒト網膜の **中心窩（偏心度 1mm）** および **周辺部（偏心度 12mm）** における神経回路を再現した数理モデルです。
+
+* **エンジン**: **NEURON (C/C++ベース)**。物理的なイオンチャネルや膜電位の計算を担当。
+* **コントローラー**: **Python**。実験条件の制御、並列実行、データ解析を担当。
+* **ターゲット**: 網膜生理学やPythonの経験がないエンジニア（C言語のポインタや構造体を理解していることを前提とします）。
+
+### コア機能
+1.  **連続実験（Parameter Sweep）**: 条件を動的に変更し、数百〜数千パターンの実験を自動実行。
+2.  **変性シミュレーション**: 「一次変性（光受容体の消失）」および「二次変性（ネットワークの崩壊）」のプロセスを追跡。
+3.  **計算機的検証**: 生理学データ（細胞密度・接続数）が、計算モデル上で正しく再現されているかを自動検証。
+
+---
+
+## 2. クイックスタート (Quickstart)
+
+Cエンジニアにとっての「ビルド（Build）」と「実行（Execute）」のプロセスです。
+
+### 2.1 依存ライブラリのインストール
+```bash
+# 仮想環境の作成と有効化
+python3 -m venv .venv
+source .venv/bin/activate
+
+# 必要なパッケージのインストール
+pip install --upgrade pip
+pip install numpy matplotlib pandas neuron==8.2.4
 
 2.2 モデルのコンパイル (Compilation)
 
