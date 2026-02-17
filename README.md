@@ -20,7 +20,7 @@
 python3 -m venv .venv && source .venv/bin/activate && pip
 install --upgrade pip && pip install numpy matplotlib pandas
 neuron==8.2.4 && git clone
-https://github.com/mmmmm2024/retina02.git && cd retina
+https://github.com/mmmmm2024/retina_foveal.git && cd retina
 && nrnivmodl mod
 ```
 
