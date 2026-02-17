@@ -79,16 +79,16 @@ python sweep_survival.py
 変性進行（細胞死）に伴う回路の変化をシミュレートします。
 
 結合強度解析
-
+```bash
 python sweep_coupling.py
-
+```
 
 Gap Junctionなどの接続条件を振り、応答特性の変化を解析します。
 
 可視化（ヒートマップ）
-
+```bash
 python aiiac_heatmap_rc_peripheral.py
-
+```
 
 解析結果を視覚的なマップとして出力し、傾向を把握します。
 
