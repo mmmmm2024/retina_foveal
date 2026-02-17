@@ -34,17 +34,15 @@ Cエンジニアにとっての「ビルド（Build）」と「実行（Execute�
 python3 -m venv .venv
 source .venv/bin/activate
 ```
-# 必要なパッケージのインストール
-pip install --upgrade pip
-pip install numpy matplotlib pandas neuron==8.2.4
 
 2.2 モデルのコンパイル (Compilation)
 
 NEURONの低レイヤーコード（.mod ファイル）をコンパイルします。
 C言語の make に相当する重要な作業です。
 
+```bash
 nrnivmodl mod
-
+```
 
 [!IMPORTANT]
 実行後、arm64/ または x86_64/ フォルダが生成されていれば成功です。
