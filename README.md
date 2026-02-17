@@ -54,7 +54,7 @@ mod/ 内を書き換えた際は、必ず再実行（再コンパイル）して
 
 最小構成でシミュレーションを実行し、環境が正常か確認します。
 
-python init.py
+```python init.py
 
 3. プロジェクト構造 (Project Structure)
 
